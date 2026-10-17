@@ -51,8 +51,15 @@ der Seitenliste und auf den Knöpfen.
 
 ## Einrichten
 
-1. Sicherstellen, dass Home Assistant Packages lädt: In der `configuration.yaml` steht
-   `homeassistant: packages: !include_dir_named packages`.
+1. Sicherstellen, dass Home Assistant Packages lädt. In der `configuration.yaml` muss stehen:
+
+   ```yaml
+   homeassistant:
+     packages: !include_dir_named packages
+   ```
+
+   Gibt es dort schon eine Zeile `homeassistant:`, nur die Zeile `packages:` darunter einfügen. Ein zweiter Schlüssel
+   `homeassistant:` würde den ersten überschreiben.
 2. `packages/tessera_control.yaml` nach `/config/packages/` kopieren, die Platzhalter ersetzen, die Konfiguration
    prüfen (Tools → YAML → Konfiguration prüfen) und Home Assistant neu starten.
 3. **Tessera rotation interval** auf die gewünschten Sekunden zwischen zwei Seiten stellen (beim ersten Mal steht er

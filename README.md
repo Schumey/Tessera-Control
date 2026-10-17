@@ -48,8 +48,15 @@ and on the buttons.
 
 ## Set up
 
-1. Make sure Home Assistant loads packages: `configuration.yaml` has
-   `homeassistant: packages: !include_dir_named packages`.
+1. Make sure Home Assistant loads packages. `configuration.yaml` needs:
+
+   ```yaml
+   homeassistant:
+     packages: !include_dir_named packages
+   ```
+
+   If it already has a `homeassistant:` line, put only the `packages:` line under it. A second `homeassistant:` key
+   would overwrite the first.
 2. Copy `packages/tessera_control.yaml` to `/config/packages/`, replace its placeholders, check the configuration
    (Tools → YAML → Check configuration) and restart Home Assistant.
 3. Set **Tessera rotation interval** to the seconds you want between pages (it starts at 10 the first time), and

@@ -1,10 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
 
 - The three brightness levels are helpers now (**Tessera brightness day**, **evening**, **dim**), set with sliders on
   the dashboard card instead of in the automation. A new level applies at once. Set them once after updating: they
   start at 5 %.
+- The README shows the `configuration.yaml` lines that load packages as a YAML block.
 
 ## 0.1.0
 
