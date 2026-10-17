@@ -1,0 +1,55 @@
+# Tessera Control: helpers for page rotation
+#
+# Copy to /config/packages/tessera_control.yaml (packages included with !include_dir_named).
+# Replace every YOUR_... placeholder first (README.md, "Placeholders").
+#
+# Used by:
+#   - automations/tessera_page_rotation.yaml
+#   - scripts/tessera_show_page.yaml
+#   - dashboards/tessera_buttons.yaml
+
+# The pages currently in the rotation, as a list such as "1,2,3".
+# Page 1 is always there; add a line per page that shows only in some situations.
+template:
+  - sensor:
+      - name: Tessera page list
+        unique_id: tessera_page_list
+        icon: mdi:book-open-page-variant
+        state: >
+          {% set p = [1] %}
+          {% if is_state('binary_sensor.YOUR_PC', 'on') %}{% set p = p + [2] %}{% endif %}
+          {% if states('sensor.YOUR_PRINTER_STATE') in ['printing', 'paused'] %}{% set p = p + [3] %}{% endif %}
+          {{ p | join(',') }}
+
+# Counts down to the next page.
+timer:
+  tessera_rotation:
+    name: Tessera rotation
+    icon: mdi:timer-sync-outline
+    duration: "00:00:30"
+    restore: false
+
+input_number:
+  # Seconds between two pages. Starts at 10 the first time; set it once, it is restored after that.
+  tessera_rotation_interval:
+    name: Tessera rotation interval
+    icon: mdi:timer-cog-outline
+    min: 10
+    max: 300
+    step: 5
+    unit_of_measurement: s
+    mode: slider
+  # The page Home Assistant showed last. The screen does not report its page.
+  tessera_current_page:
+    name: Tessera current page
+    icon: mdi:numeric
+    min: 1
+    max: 20
+    step: 1
+    mode: box
+
+# Rotation on or off. Off gives the screen's own "Back to page 1" back.
+input_boolean:
+  tessera_rotation:
+    name: Tessera rotation
+    icon: mdi:rotate-3d-variant

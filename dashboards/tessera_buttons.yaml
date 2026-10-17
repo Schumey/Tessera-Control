@@ -1,0 +1,35 @@
+# Dashboard card: a button per page and the rotation switch
+# Edit dashboard → Add card → Manual
+type: grid
+columns: 4
+square: false
+cards:
+  - type: button
+    name: Home
+    icon: mdi:home
+    tap_action:
+      action: perform-action
+      perform_action: script.tessera_show_page
+      data:
+        page: 1
+  - type: button
+    name: PC
+    icon: mdi:desktop-tower-monitor
+    tap_action:
+      action: perform-action
+      perform_action: script.tessera_show_page
+      data:
+        page: 2
+  - type: button
+    name: Printer
+    icon: mdi:printer-3d
+    tap_action:
+      action: perform-action
+      perform_action: script.tessera_show_page
+      data:
+        page: 3
+  - type: button
+    entity: input_boolean.tessera_rotation
+    name: Rotation
+    tap_action:
+      action: toggle

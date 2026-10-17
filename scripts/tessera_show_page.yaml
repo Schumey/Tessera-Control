@@ -1,0 +1,41 @@
+# Script "Tessera show page" (script.tessera_show_page)
+# Settings → Automations & scenes → Scripts → Create script → ⋮ → Edit in YAML
+# Shows a page and pauses the rotation for a few minutes; it then goes on from that page.
+alias: Tessera show page
+mode: restart
+fields:
+  page:
+    name: Page
+    required: true
+    selector:
+      number:
+        min: 1
+        max: 10
+        mode: box
+  pause:
+    name: Pause rotation (minutes)
+    default: 5
+    selector:
+      number:
+        min: 1
+        max: 120
+        unit_of_measurement: min
+sequence:
+  - action: esphome.YOUR_NODE_show_page
+    data:
+      page: "{{ page | int }}"
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.tessera_current_page
+    data:
+      value: "{{ page | int }}"
+  - if:
+      - condition: state
+        entity_id: input_boolean.tessera_rotation
+        state: "on"
+    then:
+      - action: timer.start
+        target:
+          entity_id: timer.tessera_rotation
+        data:
+          duration: "{{ (pause | default(5) | int) * 60 }}"

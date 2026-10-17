@@ -1,0 +1,81 @@
+# Automation "Tessera – brightness"
+# Settings → Automations & scenes → Create automation → ⋮ → Edit in YAML
+#
+# The first rule that fits wins:
+#   asleep                                         → screen off
+#   away, or sun down and the room lights all off  → 20 %
+#   sun down                                       → 60 %
+#   otherwise                                      → 100 %
+# "Wake" is pressed only after sleep and when Home Assistant starts.
+alias: Tessera – brightness
+mode: restart
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.YOUR_SLEEP
+    to: ~
+    id: sleep
+  - trigger: state
+    entity_id:
+      - input_boolean.YOUR_PRESENCE
+      - light.YOUR_ROOM_LIGHTS
+      - sun.sun
+    to: ~
+  - trigger: homeassistant
+    event: start
+    id: sleep
+actions:
+  - if:
+      - condition: state
+        entity_id: binary_sensor.YOUR_SLEEP
+        state: "on"
+    then:
+      - action: button.press
+        target:
+          entity_id: button.YOUR_SCREEN_sleep
+      - stop: Sleeping
+  - if:
+      - condition: trigger
+        id: sleep
+    then:
+      - action: button.press
+        target:
+          entity_id: button.YOUR_SCREEN_wake
+  - choose:
+      - conditions:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id: input_boolean.YOUR_PRESENCE
+                state: "off"
+              - condition: and
+                conditions:
+                  - condition: state
+                    entity_id: sun.sun
+                    state: below_horizon
+                  # Several lights: list them here and in the trigger; all must be off.
+                  - condition: state
+                    entity_id:
+                      - light.YOUR_ROOM_LIGHTS
+                    state: "off"
+        sequence:
+          - action: number.set_value
+            target:
+              entity_id: number.YOUR_SCREEN_normal_brightness
+            data:
+              value: 20
+      - conditions:
+          - condition: state
+            entity_id: sun.sun
+            state: below_horizon
+        sequence:
+          - action: number.set_value
+            target:
+              entity_id: number.YOUR_SCREEN_normal_brightness
+            data:
+              value: 60
+    default:
+      - action: number.set_value
+        target:
+          entity_id: number.YOUR_SCREEN_normal_brightness
+        data:
+          value: 100
