@@ -8,8 +8,8 @@ screen into a status display that runs by itself:
 - **Page rotation.** The screen moves through its pages at an interval you set.
 - **Pages by situation.** Which pages are in the rotation depends on what is going on: the home page always, the
   PC page while the PC is on, the printer page while it prints. A page that joins shows at once.
-- **Brightness by situation.** 100 % by day, 60 % in the evening, 20 % when nobody is home or the room is dark, off
-  while you sleep.
+- **Brightness by situation.** One level by day, one in the evening, one when nobody is home or the room is dark
+  (for example 100 %, 60 % and 20 %), each set with a slider; off while you sleep.
 - **Buttons on a dashboard** that jump to a page and pause the rotation for a few minutes.
 
 Everything is plain Home Assistant: a package with helpers, two automations, a script and a dashboard card. Nothing is
@@ -23,11 +23,11 @@ only uses those.
 
 | File | What |
 |---|---|
-| [`packages/tessera_control.yaml`](packages/tessera_control.yaml) | The helpers: the page list (a template sensor), the rotation timer, the interval, the current page, the rotation switch. |
+| [`packages/tessera_control.yaml`](packages/tessera_control.yaml) | The helpers: the page list (a template sensor), the rotation timer, the interval, the current page, the rotation switch, the three brightness levels. |
 | [`automations/tessera_page_rotation.yaml`](automations/tessera_page_rotation.yaml) | Shows the next page when the timer ends, and reacts when the page list changes. |
-| [`automations/tessera_brightness.yaml`](automations/tessera_brightness.yaml) | Sets the brightness from presence, sleep, the sun and the room's lights. |
+| [`automations/tessera_brightness.yaml`](automations/tessera_brightness.yaml) | Sets the brightness from presence, sleep, the sun and the room's lights, using the three levels. |
 | [`scripts/tessera_show_page.yaml`](scripts/tessera_show_page.yaml) | Shows one page and pauses the rotation. For dashboard buttons. |
-| [`dashboards/tessera_buttons.yaml`](dashboards/tessera_buttons.yaml) | A card with a button per page and the rotation switch. |
+| [`dashboards/tessera_buttons.yaml`](dashboards/tessera_buttons.yaml) | A card with a button per page, the rotation switch and sliders for the brightness levels. |
 
 ## Placeholders
 
@@ -52,7 +52,8 @@ and on the buttons.
    `homeassistant: packages: !include_dir_named packages`.
 2. Copy `packages/tessera_control.yaml` to `/config/packages/`, replace its placeholders, check the configuration
    (Tools → YAML → Check configuration) and restart Home Assistant.
-3. Set **Tessera rotation interval** to the seconds you want between pages (it starts at 10 the first time).
+3. Set **Tessera rotation interval** to the seconds you want between pages (it starts at 10 the first time), and
+   **Tessera brightness day**, **evening** and **dim** to the levels you want (they start at 5 % the first time).
 4. Create the script: Settings → Automations & scenes → Scripts → Create script → ⋮ → Edit in YAML, paste
    `scripts/tessera_show_page.yaml` with your placeholders, save it as `script.tessera_show_page`.
 5. Create both automations the same way from `automations/`.

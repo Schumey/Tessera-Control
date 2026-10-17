@@ -1,10 +1,11 @@
-# Tessera Control: helpers for page rotation
+# Tessera Control: helpers for page rotation and brightness
 #
 # Copy to /config/packages/tessera_control.yaml (packages included with !include_dir_named).
 # Replace every YOUR_... placeholder first (README.md, "Placeholders").
 #
 # Used by:
 #   - automations/tessera_page_rotation.yaml
+#   - automations/tessera_brightness.yaml
 #   - scripts/tessera_show_page.yaml
 #   - dashboards/tessera_buttons.yaml
 
@@ -47,6 +48,32 @@ input_number:
     max: 20
     step: 1
     mode: box
+  # The three brightness levels. They start at 5 % the first time; set them once, they are restored after that.
+  # Minimum 5 % so a level never turns the screen off; sleep does that.
+  tessera_brightness_day:
+    name: Tessera brightness day
+    icon: mdi:brightness-7
+    min: 5
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+    mode: slider
+  tessera_brightness_evening:
+    name: Tessera brightness evening
+    icon: mdi:brightness-5
+    min: 5
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+    mode: slider
+  tessera_brightness_dim:
+    name: Tessera brightness dim
+    icon: mdi:brightness-4
+    min: 5
+    max: 100
+    step: 5
+    unit_of_measurement: "%"
+    mode: slider
 
 # Rotation on or off. Off gives the screen's own "Back to page 1" back.
 input_boolean:

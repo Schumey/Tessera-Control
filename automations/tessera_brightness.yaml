@@ -3,9 +3,10 @@
 #
 # The first rule that fits wins:
 #   asleep                                         → screen off
-#   away, or sun down and the room lights all off  → 20 %
-#   sun down                                       → 60 %
-#   otherwise                                      → 100 %
+#   away, or sun down and the room lights all off  → Tessera brightness dim
+#   sun down                                       → Tessera brightness evening
+#   otherwise                                      → Tessera brightness day
+# The levels are helpers from the package; moving a slider applies it at once.
 # "Wake" is pressed only after sleep and when Home Assistant starts.
 alias: Tessera – brightness
 mode: restart
@@ -19,6 +20,9 @@ triggers:
       - input_boolean.YOUR_PRESENCE
       - light.YOUR_ROOM_LIGHTS
       - sun.sun
+      - input_number.tessera_brightness_day
+      - input_number.tessera_brightness_evening
+      - input_number.tessera_brightness_dim
     to: ~
   - trigger: homeassistant
     event: start
@@ -62,7 +66,7 @@ actions:
             target:
               entity_id: number.YOUR_SCREEN_normal_brightness
             data:
-              value: 20
+              value: "{{ states('input_number.tessera_brightness_dim') | int(20) }}"
       - conditions:
           - condition: state
             entity_id: sun.sun
@@ -72,10 +76,10 @@ actions:
             target:
               entity_id: number.YOUR_SCREEN_normal_brightness
             data:
-              value: 60
+              value: "{{ states('input_number.tessera_brightness_evening') | int(60) }}"
     default:
       - action: number.set_value
         target:
           entity_id: number.YOUR_SCREEN_normal_brightness
         data:
-          value: 100
+          value: "{{ states('input_number.tessera_brightness_day') | int(100) }}"

@@ -1,35 +1,45 @@
-# Dashboard card: a button per page and the rotation switch
+# Dashboard card: a button per page, the rotation switch and the brightness levels
 # Edit dashboard → Add card → Manual
-type: grid
-columns: 4
-square: false
+type: vertical-stack
 cards:
-  - type: button
-    name: Home
-    icon: mdi:home
-    tap_action:
-      action: perform-action
-      perform_action: script.tessera_show_page
-      data:
-        page: 1
-  - type: button
-    name: PC
-    icon: mdi:desktop-tower-monitor
-    tap_action:
-      action: perform-action
-      perform_action: script.tessera_show_page
-      data:
-        page: 2
-  - type: button
-    name: Printer
-    icon: mdi:printer-3d
-    tap_action:
-      action: perform-action
-      perform_action: script.tessera_show_page
-      data:
-        page: 3
-  - type: button
-    entity: input_boolean.tessera_rotation
-    name: Rotation
-    tap_action:
-      action: toggle
+  - type: grid
+    columns: 4
+    square: false
+    cards:
+      - type: button
+        name: Home
+        icon: mdi:home
+        tap_action:
+          action: perform-action
+          perform_action: script.tessera_show_page
+          data:
+            page: 1
+      - type: button
+        name: PC
+        icon: mdi:desktop-tower-monitor
+        tap_action:
+          action: perform-action
+          perform_action: script.tessera_show_page
+          data:
+            page: 2
+      - type: button
+        name: Printer
+        icon: mdi:printer-3d
+        tap_action:
+          action: perform-action
+          perform_action: script.tessera_show_page
+          data:
+            page: 3
+      - type: button
+        entity: input_boolean.tessera_rotation
+        name: Rotation
+        tap_action:
+          action: toggle
+  - type: entities
+    entities:
+      - entity: input_number.tessera_brightness_day
+        name: Day
+      - entity: input_number.tessera_brightness_evening
+        name: Evening
+      - entity: input_number.tessera_brightness_dim
+        name: Dim

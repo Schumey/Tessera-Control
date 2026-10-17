@@ -9,8 +9,8 @@ zu einem Statusdisplay macht, das von selbst läuft:
 - **Seiten je nach Situation.** Welche Seiten in der Rotation sind, hängt davon ab, was gerade los ist: die Startseite
   immer, die PC-Seite, solange der PC an ist, die Druckerseite, solange er druckt. Eine neu hinzukommende Seite wird
   sofort gezeigt.
-- **Helligkeit je nach Situation.** Tagsüber 100 %, abends 60 %, 20 % wenn niemand da oder der Raum dunkel ist, aus
-  während du schläfst.
+- **Helligkeit je nach Situation.** Eine Stufe für tagsüber, eine für abends, eine wenn niemand da oder der Raum
+  dunkel ist (zum Beispiel 100 %, 60 % und 20 %), jede mit einem Slider einstellbar; aus, während du schläfst.
 - **Knöpfe fürs Dashboard,** die auf eine Seite springen und die Rotation ein paar Minuten pausieren.
 
 Alles ist reines Home Assistant: ein Package mit Helfern, zwei Automationen, ein Skript und eine Dashboard-Karte. Auf
@@ -24,11 +24,11 @@ nutzt nur diese.
 
 | Datei | Was |
 |---|---|
-| [`packages/tessera_control.yaml`](packages/tessera_control.yaml) | Die Helfer: Seitenliste (Template-Sensor), Rotations-Timer, Intervall, aktuelle Seite, Rotations-Schalter. |
+| [`packages/tessera_control.yaml`](packages/tessera_control.yaml) | Die Helfer: Seitenliste (Template-Sensor), Rotations-Timer, Intervall, aktuelle Seite, Rotations-Schalter, die drei Helligkeitsstufen. |
 | [`automations/tessera_page_rotation.yaml`](automations/tessera_page_rotation.yaml) | Zeigt die nächste Seite, wenn der Timer abläuft, und reagiert, wenn sich die Seitenliste ändert. |
-| [`automations/tessera_brightness.yaml`](automations/tessera_brightness.yaml) | Setzt die Helligkeit nach Anwesenheit, Schlaf, Sonne und den Leuchten im Raum. |
+| [`automations/tessera_brightness.yaml`](automations/tessera_brightness.yaml) | Setzt die Helligkeit nach Anwesenheit, Schlaf, Sonne und den Leuchten im Raum, mit den drei Stufen. |
 | [`scripts/tessera_show_page.yaml`](scripts/tessera_show_page.yaml) | Zeigt eine Seite und pausiert die Rotation. Für Dashboard-Knöpfe. |
-| [`dashboards/tessera_buttons.yaml`](dashboards/tessera_buttons.yaml) | Eine Karte mit einem Knopf pro Seite und dem Rotations-Schalter. |
+| [`dashboards/tessera_buttons.yaml`](dashboards/tessera_buttons.yaml) | Eine Karte mit einem Knopf pro Seite, dem Rotations-Schalter und Slidern für die Helligkeitsstufen. |
 
 Die Dateien selbst sind auf Englisch kommentiert.
 
@@ -56,7 +56,8 @@ der Seitenliste und auf den Knöpfen.
 2. `packages/tessera_control.yaml` nach `/config/packages/` kopieren, die Platzhalter ersetzen, die Konfiguration
    prüfen (Tools → YAML → Konfiguration prüfen) und Home Assistant neu starten.
 3. **Tessera rotation interval** auf die gewünschten Sekunden zwischen zwei Seiten stellen (beim ersten Mal steht er
-   auf 10).
+   auf 10), und **Tessera brightness day**, **evening** und **dim** auf die gewünschten Stufen (beim ersten Mal stehen
+   sie auf 5 %).
 4. Das Skript anlegen: Einstellungen → Automationen & Szenen → Skripte → Skript erstellen → ⋮ → In YAML bearbeiten,
    `scripts/tessera_show_page.yaml` mit deinen Platzhaltern einfügen und als `script.tessera_show_page` speichern.
 5. Beide Automationen genauso aus `automations/` anlegen.
