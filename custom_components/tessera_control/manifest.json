@@ -1,0 +1,13 @@
+{
+  "domain": "tessera_control",
+  "name": "Tessera Control",
+  "after_dependencies": ["esphome"],
+  "codeowners": ["@Schumey"],
+  "config_flow": true,
+  "documentation": "https://github.com/Schumey/Tessera-Control",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/Schumey/Tessera-Control/issues",
+  "requirements": [],
+  "version": "0.3.0"
+}

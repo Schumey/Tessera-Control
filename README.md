@@ -2,90 +2,98 @@
 
 [Deutsch](README.de.md)
 
-Home Assistant configuration that turns a [Tessera](https://github.com/MaxGramser/homeassistant_espscreen) touch
+A Home Assistant integration that turns a [Tessera](https://github.com/MaxGramser/homeassistant_espscreen) touch
 screen into a status display that runs by itself:
 
 - **Page rotation.** The screen moves through its pages at an interval you set.
-- **Pages by situation.** Which pages are in the rotation depends on what is going on: the home page always, the
-  PC page while the PC is on, the printer page while it prints. A page that joins shows at once.
-- **Brightness by situation.** One level by day, one in the evening, one when nobody is home or the room is dark
-  (for example 100 %, 60 % and 20 %), each set with a slider; off while you sleep.
-- **Buttons on a dashboard** that jump to a page and pause the rotation for a few minutes.
+- **Pages by situation.** Each page is in the rotation always, or only while an entity has certain states: the PC
+  page while the PC is on, the printer page while it prints. A page that joins shows at once.
+- **Brightness by situation.** One level by day, one in the evening, a dim one when nobody is home or the room is
+  dark, each set with a slider; the screen goes off while you sleep.
+- **A button per page** for dashboards and scripts: it shows the page and pauses the rotation for a few minutes.
 
-Everything is plain Home Assistant: a package with helpers, two automations, a script and a dashboard card. Nothing is
-installed on the screen, and nothing needs a firmware build.
+Nothing is installed on the screen, and nothing needs a firmware build: the integration uses the action and entities
+Tessera's firmware already gives Home Assistant.
 
-## How it works
+## Install
 
-Tessera's firmware gives Home Assistant an action per screen, `esphome.<node>_show_page`, and entities such as
-`switch.<screen>_back_to_page_1`, `number.<screen>_normal_brightness` and `button.<screen>_wake`. This configuration
-only uses those.
+With [HACS](https://hacs.xyz):
 
-| File | What |
-|---|---|
-| [`packages/tessera_control.yaml`](packages/tessera_control.yaml) | The helpers: the page list (a template sensor), the rotation timer, the interval, the current page, the rotation switch, the three brightness levels. |
-| [`automations/tessera_page_rotation.yaml`](automations/tessera_page_rotation.yaml) | Shows the next page when the timer ends, and reacts when the page list changes. |
-| [`automations/tessera_brightness.yaml`](automations/tessera_brightness.yaml) | Sets the brightness from presence, sleep, the sun and the room's lights, using the three levels. |
-| [`scripts/tessera_show_page.yaml`](scripts/tessera_show_page.yaml) | Shows one page and pauses the rotation. For dashboard buttons. |
-| [`dashboards/tessera_buttons.yaml`](dashboards/tessera_buttons.yaml) | A card with a button per page, the rotation switch and sliders for the brightness levels. |
+1. HACS → ⋮ → **Custom repositories**: add `https://github.com/Schumey/Tessera-Control`, type **Integration**.
+2. Search for **Tessera Control** in HACS and download it.
+3. Restart Home Assistant.
 
-## Placeholders
+By hand: copy `custom_components/tessera_control` into your `config/custom_components/` and restart.
 
-The files are a template: replace every `YOUR_...` with your own entity before you use them.
-
-| Placeholder | What to put there | Where to find it |
-|---|---|---|
-| `YOUR_NODE` | The screen's ESPHome node name, with `_` for `-` (`dsp-desktop` → `dsp_desktop`) | Tools → Actions: search "show_page" |
-| `YOUR_SCREEN` | The prefix of the screen's entities (`switch.moin_back_to_page_1` → `moin`). Often not the same as the node name. | Settings → Devices → your screen |
-| `binary_sensor.YOUR_SLEEP` | On while you sleep | Your own sensor or helper |
-| `input_boolean.YOUR_PRESENCE` | On while someone is home | Your own sensor or helper |
-| `light.YOUR_ROOM_LIGHTS` | The light or light group that makes the room "lit" | Settings → Entities |
-| `binary_sensor.YOUR_PC` | On while the PC is on (the Ping integration, for example) | Settings → Entities |
-| `sensor.YOUR_PRINTER_STATE` | The printer's state, `printing` while it prints | Settings → Entities |
-
-Page numbers start at 1. The examples use 1 for home, 2 for the PC and 3 for the printer: change them in the page list
-and on the buttons.
+Home Assistant 2026.10 or later.
 
 ## Set up
 
-1. Make sure Home Assistant loads packages. `configuration.yaml` needs:
+1. Settings → Devices & services → **Add integration** → **Tessera Control**, and choose the screen. It must be
+   online.
+2. On the integration's entry, **Add page** once for every page you want in the rotation:
+   - **Name**: shown on the page's button.
+   - **Page number**: the page's number on the screen; the first page is 1.
+   - **In the rotation**: *Always*, or *When an entity is in one of these states* with the entity and its states
+     (for a printer: `printing`, `paused`).
+3. **Configure** sets what the brightness follows: a sleep entity, a presence entity, the room's lights. All
+   optional.
+4. Turn on **Page rotation** and **Automatic brightness** on the screen's device page.
 
-   ```yaml
-   homeassistant:
-     packages: !include_dir_named packages
-   ```
+A page can be changed or deleted on the entry at any time.
 
-   If it already has a `homeassistant:` line, put only the `packages:` line under it. A second `homeassistant:` key
-   would overwrite the first.
-2. Copy `packages/tessera_control.yaml` to `/config/packages/`, replace its placeholders, check the configuration
-   (Tools → YAML → Check configuration) and restart Home Assistant.
-3. Set **Tessera rotation interval** to the seconds you want between pages (it starts at 10 the first time), and
-   **Tessera brightness day**, **evening** and **dim** to the levels you want (they start at 5 % the first time).
-4. Create the script: Settings → Automations & scenes → Scripts → Create script → ⋮ → Edit in YAML, paste
-   `scripts/tessera_show_page.yaml` with your placeholders, save it as `script.tessera_show_page`.
-5. Create both automations the same way from `automations/`.
-6. Turn off any automation of your own that switched pages or set the brightness of this screen.
-7. Add the card from `dashboards/tessera_buttons.yaml` to a dashboard (Add card → Manual).
-8. Turn on **Tessera rotation**.
+## What you get
 
-## Adding a page
+All on the screen's own device page:
 
-Add one line to the template of **Tessera page list** in the package, with the condition and the page number:
+| Entity | What |
+|---|---|
+| Page rotation (switch) | Rotation on or off. Off gives the screen its own "Back to page 1" again. |
+| Automatic brightness (switch) | Brightness by situation on or off. Off keeps the last brightness. |
+| Rotation interval (number) | Seconds between two pages, 10 to 600. |
+| Brightness day, evening, dim (numbers) | The three levels, 5 to 100 %, as sliders. A new level applies at once. |
+| Pages in rotation (sensor) | The pages in the rotation now, such as `1,2,3`, and as the attribute `pages`. |
+| Current page (sensor) | The page Tessera Control showed last. |
+| Show *name* (button) | One per page: shows it and pauses the rotation (Configure → *Pause after a button*). |
 
-```jinja
-{% if is_state('media_player.living_room', 'playing') %}{% set p = p + [4] %}{% endif %}
-```
+### Brightness
 
-The automations need no change. Add a button to the card if you like.
+The first rule that fits wins:
+
+| Situation | Screen |
+|---|---|
+| The sleep entity is on | off (or *Brightness dim*, see *Screen off while asleep*) |
+| Nobody is home, or after sunset with every room light off | *Brightness dim* (20 % at first) |
+| After sunset | *Brightness evening* (60 % at first) |
+| Otherwise | *Brightness day* (100 % at first) |
+
+A light that is unavailable counts as off. Without a presence entity someone is always home; without room lights
+the evening level applies after sunset.
+
+### Rotation
+
+- When the interval ends, the next page of the rotation shows, round and round.
+- When a page joins (the printer starts), it shows at once; when the shown page leaves, the first page shows.
+- With one page only, nothing is sent to the screen.
+- While the sleep entity is on, the rotation rests.
+- When the screen was offline and comes back, it gets its page again.
 
 ## Limits
 
 - **Home Assistant does not see touches.** The rotation goes on while someone swipes through the pages. Made for a
   screen that is looked at, not used.
 - **Home Assistant does not know the page on the glass,** only the one it showed last.
-- **One screen.** For a second screen, copy the files and give the helpers other names.
-- The action and entity names come from Tessera's firmware, not from its documented plugin API: a Tessera update may
-  rename them.
+- The screen's action and entities come from Tessera's firmware, not from its documented plugin API: a Tessera update
+  may rename them. Written for firmware 0.56.0.
+
+## Development
+
+```sh
+pip install -r requirements_test.txt   # Python 3.14
+pytest
+```
+
+`tests/test_logic.py` needs no Home Assistant: `pytest tests/test_logic.py --noconftest`.
 
 ## Licence
 

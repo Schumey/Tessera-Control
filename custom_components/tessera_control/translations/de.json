@@ -1,0 +1,144 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Dieses Display ist schon eingerichtet."
+    },
+    "error": {
+      "not_tessera": "Dieses Gerät ist kein Tessera-Display: Es hat keine show_page-Aktion oder keinen Schalter „Back to page 1“.",
+      "screen_offline": "Das Display ist offline: Home Assistant hat gerade keine show_page-Aktion dafür. Prüfe die Verbindung und versuche es erneut."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "device_id": "Tessera-Display"
+        },
+        "data_description": {
+          "device_id": "Das ESPHome-Gerät des Displays."
+        },
+        "description": "Wähle das Display. Danach fügst du seine Seiten hinzu („Seite hinzufügen“) und legst fest, wonach sich die Helligkeit richtet („Konfigurieren“).",
+        "title": "Tessera Control"
+      }
+    }
+  },
+  "config_subentries": {
+    "page": {
+      "abort": {
+        "reconfigure_successful": "Die Seite wurde geändert."
+      },
+      "entry_type": "Seite",
+      "error": {
+        "condition_missing": "Eine Seite, die nur in bestimmten Situationen erscheint, braucht eine Entität und mindestens einen Zustand."
+      },
+      "initiate_flow": {
+        "user": "Seite hinzufügen"
+      },
+      "step": {
+        "reconfigure": {
+          "data": {
+            "entity": "Entität",
+            "name": "Name",
+            "page": "Seitennummer",
+            "show": "In der Rotation",
+            "states": "Zustände"
+          },
+          "data_description": {
+            "entity": "Nur für „wenn eine Entität einen dieser Zustände hat“.",
+            "name": "Steht auf dem Knopf für diese Seite.",
+            "page": "Die Nummer der Seite auf dem Display; die erste Seite ist 1.",
+            "states": "Die Seite ist in der Rotation, solange die Entität einen dieser Zustände hat. Einen Zustand, der nicht in der Liste steht, eintippen und Enter drücken."
+          },
+          "title": "Seite ändern"
+        },
+        "user": {
+          "data": {
+            "entity": "Entität",
+            "name": "Name",
+            "page": "Seitennummer",
+            "show": "In der Rotation",
+            "states": "Zustände"
+          },
+          "data_description": {
+            "entity": "Nur für „wenn eine Entität einen dieser Zustände hat“.",
+            "name": "Steht auf dem Knopf für diese Seite.",
+            "page": "Die Nummer der Seite auf dem Display; die erste Seite ist 1.",
+            "states": "Die Seite ist in der Rotation, solange die Entität einen dieser Zustände hat. Einen Zustand, der nicht in der Liste steht, eintippen und Enter drücken."
+          },
+          "title": "Seite hinzufügen"
+        }
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "show_page": {
+        "name": "{page_name} zeigen"
+      }
+    },
+    "number": {
+      "brightness_day": {
+        "name": "Helligkeit Tag"
+      },
+      "brightness_dim": {
+        "name": "Helligkeit gedimmt"
+      },
+      "brightness_evening": {
+        "name": "Helligkeit Abend"
+      },
+      "rotation_interval": {
+        "name": "Rotationsintervall"
+      }
+    },
+    "sensor": {
+      "current_page": {
+        "name": "Aktuelle Seite"
+      },
+      "pages": {
+        "name": "Seiten in der Rotation"
+      }
+    },
+    "switch": {
+      "auto_brightness": {
+        "name": "Automatische Helligkeit"
+      },
+      "rotation": {
+        "name": "Seitenrotation"
+      }
+    }
+  },
+  "exceptions": {
+    "screen_missing": {
+      "message": "Das Tessera-Display dieses Eintrags ist verschwunden oder kein Tessera-Display mehr. Entferne den Eintrag und richte ihn neu ein."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "fallback_page": "Ersatzseite",
+          "pause_minutes": "Pause nach einem Knopf",
+          "presence_entity": "Anwesenheit",
+          "room_lights": "Raumleuchten",
+          "sleep_entity": "Schlaf",
+          "sleep_screen_off": "Display aus beim Schlafen"
+        },
+        "data_description": {
+          "fallback_page": "Wird gezeigt, wenn keine Seite passt.",
+          "pause_minutes": "So lange wartet die Rotation, nachdem ein Seitenknopf gedrückt wurde.",
+          "presence_entity": "An oder home, solange jemand zu Hause ist. Ohne sie gilt immer jemand als zu Hause. Abwesend heißt gedimmt.",
+          "room_lights": "Nach Sonnenuntergang gilt der Raum als dunkel, wenn alle aus sind: gedimmt. Ohne Leuchten gilt die Abend-Helligkeit.",
+          "sleep_entity": "An, während du schläfst: Die Rotation ruht und das Display geht aus.",
+          "sleep_screen_off": "Aus: Das Display bleibt stattdessen gedimmt an."
+        },
+        "title": "Rotation und Helligkeit"
+      }
+    }
+  },
+  "selector": {
+    "show": {
+      "options": {
+        "always": "Immer",
+        "when": "Wenn eine Entität einen dieser Zustände hat"
+      }
+    }
+  }
+}

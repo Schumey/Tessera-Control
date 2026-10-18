@@ -1,0 +1,144 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "This screen is already set up."
+    },
+    "error": {
+      "not_tessera": "This device is not a Tessera screen: it has no show_page action or no \"Back to page 1\" switch.",
+      "screen_offline": "The screen is offline: Home Assistant has no show_page action for it right now. Make sure it is connected, then try again."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "device_id": "Tessera screen"
+        },
+        "data_description": {
+          "device_id": "The ESPHome device of the screen."
+        },
+        "description": "Choose the screen. Afterwards, add its pages (\"Add page\") and set what the brightness follows (\"Configure\").",
+        "title": "Tessera Control"
+      }
+    }
+  },
+  "config_subentries": {
+    "page": {
+      "abort": {
+        "reconfigure_successful": "The page was changed."
+      },
+      "entry_type": "Page",
+      "error": {
+        "condition_missing": "A page shown only in some situations needs an entity and at least one state."
+      },
+      "initiate_flow": {
+        "user": "Add page"
+      },
+      "step": {
+        "reconfigure": {
+          "data": {
+            "entity": "Entity",
+            "name": "Name",
+            "page": "Page number",
+            "show": "In the rotation",
+            "states": "States"
+          },
+          "data_description": {
+            "entity": "Only for \"when an entity is in one of these states\".",
+            "name": "Shown on the button for this page.",
+            "page": "The page's number on the screen; the first page is 1.",
+            "states": "The page is in the rotation while the entity has one of these states. Type a state that is not in the list and press Enter."
+          },
+          "title": "Change page"
+        },
+        "user": {
+          "data": {
+            "entity": "Entity",
+            "name": "Name",
+            "page": "Page number",
+            "show": "In the rotation",
+            "states": "States"
+          },
+          "data_description": {
+            "entity": "Only for \"when an entity is in one of these states\".",
+            "name": "Shown on the button for this page.",
+            "page": "The page's number on the screen; the first page is 1.",
+            "states": "The page is in the rotation while the entity has one of these states. Type a state that is not in the list and press Enter."
+          },
+          "title": "Add page"
+        }
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "show_page": {
+        "name": "Show {page_name}"
+      }
+    },
+    "number": {
+      "brightness_day": {
+        "name": "Brightness day"
+      },
+      "brightness_dim": {
+        "name": "Brightness dim"
+      },
+      "brightness_evening": {
+        "name": "Brightness evening"
+      },
+      "rotation_interval": {
+        "name": "Rotation interval"
+      }
+    },
+    "sensor": {
+      "current_page": {
+        "name": "Current page"
+      },
+      "pages": {
+        "name": "Pages in rotation"
+      }
+    },
+    "switch": {
+      "auto_brightness": {
+        "name": "Automatic brightness"
+      },
+      "rotation": {
+        "name": "Page rotation"
+      }
+    }
+  },
+  "exceptions": {
+    "screen_missing": {
+      "message": "The Tessera screen of this entry is gone, or it is no longer a Tessera screen. Remove the entry and set it up again."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "fallback_page": "Fallback page",
+          "pause_minutes": "Pause after a button",
+          "presence_entity": "Presence",
+          "room_lights": "Room lights",
+          "sleep_entity": "Sleep",
+          "sleep_screen_off": "Screen off while asleep"
+        },
+        "data_description": {
+          "fallback_page": "Shown when no page applies.",
+          "pause_minutes": "How long the rotation waits after a page button was pressed.",
+          "presence_entity": "On or home while someone is home. Without it, someone is always home. Away means the dim level.",
+          "room_lights": "After sunset the room counts as dark when all of them are off: the dim level. Without lights, the evening level is used.",
+          "sleep_entity": "On while you sleep: the rotation rests and the screen goes off.",
+          "sleep_screen_off": "Off: the screen stays on at the dim level instead."
+        },
+        "title": "Rotation and brightness"
+      }
+    }
+  },
+  "selector": {
+    "show": {
+      "options": {
+        "always": "Always",
+        "when": "When an entity is in one of these states"
+      }
+    }
+  }
+}

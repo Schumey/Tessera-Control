@@ -1,0 +1,39 @@
+{
+  "entity": {
+    "button": {
+      "show_page": {
+        "default": "mdi:page-next-outline"
+      }
+    },
+    "number": {
+      "brightness_day": {
+        "default": "mdi:brightness-7"
+      },
+      "brightness_dim": {
+        "default": "mdi:brightness-4"
+      },
+      "brightness_evening": {
+        "default": "mdi:brightness-5"
+      },
+      "rotation_interval": {
+        "default": "mdi:timer-cog-outline"
+      }
+    },
+    "sensor": {
+      "current_page": {
+        "default": "mdi:book-open-page-variant"
+      },
+      "pages": {
+        "default": "mdi:book-multiple"
+      }
+    },
+    "switch": {
+      "auto_brightness": {
+        "default": "mdi:brightness-auto"
+      },
+      "rotation": {
+        "default": "mdi:rotate-3d-variant"
+      }
+    }
+  }
+}
