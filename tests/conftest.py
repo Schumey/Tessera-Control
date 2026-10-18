@@ -22,7 +22,7 @@ from custom_components.tessera_control.const import (
     DOMAIN,
 )
 
-MAC = "b8:1f:3f:aa:56:d8"
+MAC = "00:00:5e:00:53:01"
 SHOW_PAGE = "dsp_desktop_show_page"
 
 PAGES = [
