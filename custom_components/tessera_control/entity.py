@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from homeassistant.core import callback
-from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 
@@ -21,12 +21,10 @@ class TesseraControlEntity(Entity):
         self.controller = controller
         self._attr_translation_key = key
         self._attr_unique_id = f"{controller.entry.entry_id}_{key}"
-        screen = controller.screen
-        if screen.connections or screen.identifiers:
-            self._attr_device_info = DeviceInfo(
-                connections=set(screen.connections),
-                identifiers=set(screen.identifiers),
-            )
+        # Shown on the screen's own device, which stays ESPHome's
+        self.device_entry = dr.async_get(controller.hass).async_get(
+            controller.screen.device_id
+        )
 
     async def async_added_to_hass(self) -> None:
         """Follow the controller."""

@@ -95,6 +95,7 @@ async def test_dark_level_instead_of_off(hass: HomeAssistant, screen: Screen) ->
 
 async def test_level_applies_at_once(hass: HomeAssistant, screen: Screen) -> None:
     """A new level is set on the screen as soon as it changes."""
+    hass.states.async_set("input_boolean.home", "on")
     hass.states.async_set("sun.sun", "below_horizon")
     hass.states.async_set("light.ceiling", "on")
     await screen.setup_entry(options=OPTIONS)

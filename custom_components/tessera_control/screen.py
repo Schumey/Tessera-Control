@@ -21,8 +21,6 @@ class Screen:
     brightness: str | None
     wake: str | None
     sleep: str | None
-    connections: frozenset[tuple[str, str]]
-    identifiers: frozenset[tuple[str, str]]
 
 
 def show_page_service(hass: HomeAssistant, device: dr.DeviceEntry) -> str | None:
@@ -30,12 +28,13 @@ def show_page_service(hass: HomeAssistant, device: dr.DeviceEntry) -> str | None
 
     ESPHome names a device's actions <node name with _ for ->_<action>.
     """
-    for entry_id in device.config_entries:
-        entry = hass.config_entries.async_get_entry(entry_id)
-        if entry is None or entry.domain != ESPHOME_DOMAIN:
-            continue
-        if name := entry.data.get("device_name"):
-            return f"{name.replace('-', '_')}_show_page"
+    if device.config_entry_id is None:
+        return None
+    entry = hass.config_entries.async_get_entry(device.config_entry_id)
+    if entry is None or entry.domain != ESPHOME_DOMAIN:
+        return None
+    if name := entry.data.get("device_name"):
+        return f"{name.replace('-', '_')}_show_page"
     return None
 
 
@@ -71,7 +70,5 @@ def resolve_screen(
     return Screen(
         device_id=device_id,
         show_page_service=service,
-        connections=frozenset(device.connections),
-        identifiers=frozenset(device.identifiers),
         **entities,
     )
