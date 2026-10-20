@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+- New option **Keep "Back to page 1" off** (Configure): the screen turns "Back to page 1" on again after every restart
+  and firmware update; Tessera Control turns it off each time, also while the rotation is off. Off at first.
+- While the rotation runs, "Back to page 1" turned on is turned off again, not only when the screen comes back.
+
 ## 0.3.0
 
 - Tessera Control is now an integration, installed with HACS. It replaces the YAML templates of 0.1.0 and 0.2.0: set

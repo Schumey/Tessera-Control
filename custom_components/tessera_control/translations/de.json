@@ -114,6 +114,7 @@
     "step": {
       "init": {
         "data": {
+          "back_to_page_1_off": "„Back to page 1“ immer aus",
           "fallback_page": "Ersatzseite",
           "pause_minutes": "Pause nach einem Knopf",
           "presence_entity": "Anwesenheit",
@@ -122,6 +123,7 @@
           "sleep_screen_off": "Display aus beim Schlafen"
         },
         "data_description": {
+          "back_to_page_1_off": "Das Display schaltet „Back to page 1“ nach jedem Neustart und Firmware-Update wieder ein. An: Tessera Control schaltet es dann jedes Mal aus, auch ohne Rotation. Aus: Nur die Rotation hält es aus.",
           "fallback_page": "Wird gezeigt, wenn keine Seite passt.",
           "pause_minutes": "So lange wartet die Rotation, nachdem ein Seitenknopf gedrückt wurde.",
           "presence_entity": "An oder home, solange jemand zu Hause ist. Ohne sie gilt immer jemand als zu Hause. Abwesend heißt gedimmt.",

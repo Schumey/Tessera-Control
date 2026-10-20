@@ -48,7 +48,7 @@ All on the screen's own device page:
 
 | Entity | What |
 |---|---|
-| Page rotation (switch) | Rotation on or off. Off gives the screen its own "Back to page 1" again. |
+| Page rotation (switch) | Rotation on or off. Off gives the screen its own "Back to page 1" again, unless *Keep "Back to page 1" off* is set. |
 | Automatic brightness (switch) | Brightness by situation on or off. Off keeps the last brightness. |
 | Rotation interval (number) | Seconds between two pages, 10 to 600. |
 | Brightness day, evening, dim (numbers) | The three levels, 5 to 100 %, as sliders. A new level applies at once. |
@@ -77,6 +77,9 @@ the evening level applies after sunset.
 - With one page only, nothing is sent to the screen.
 - While the sleep entity is on, the rotation rests.
 - When the screen was offline and comes back, it gets its page again.
+- The screen turns its "Back to page 1" on again after every restart and firmware update; while the rotation runs,
+  Tessera Control turns it off again. With Configure → *Keep "Back to page 1" off* it does so always, also without
+  the rotation.
 
 ## Limits
 

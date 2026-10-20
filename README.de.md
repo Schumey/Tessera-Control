@@ -50,7 +50,7 @@ Alles auf der Geräteseite des Displays:
 
 | Entität | Was |
 |---|---|
-| Seitenrotation (Schalter) | Rotation an oder aus. Aus gibt dem Display sein eigenes „Back to page 1“ zurück. |
+| Seitenrotation (Schalter) | Rotation an oder aus. Aus gibt dem Display sein eigenes „Back to page 1“ zurück, außer mit *„Back to page 1“ immer aus*. |
 | Automatische Helligkeit (Schalter) | Helligkeit je nach Situation an oder aus. Aus behält die letzte Helligkeit. |
 | Rotationsintervall (Zahl) | Sekunden zwischen zwei Seiten, 10 bis 600. |
 | Helligkeit Tag, Abend, gedimmt (Zahlen) | Die drei Stufen, 5 bis 100 %, als Schieberegler. Eine neue Stufe gilt sofort. |
@@ -80,6 +80,9 @@ Raumleuchten gilt nach Sonnenuntergang die Abend-Stufe.
 - Bei nur einer Seite wird nichts ans Display geschickt.
 - Solange die Schlaf-Entität an ist, ruht die Rotation.
 - War das Display offline und ist wieder da, bekommt es seine Seite erneut.
+- Das Display schaltet sein „Back to page 1“ nach jedem Neustart und Firmware-Update wieder ein; während die Rotation
+  läuft, schaltet Tessera Control es wieder aus. Mit Konfigurieren → *„Back to page 1“ immer aus* immer, auch ohne
+  Rotation.
 
 ## Grenzen
 

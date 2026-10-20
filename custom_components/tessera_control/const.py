@@ -18,12 +18,14 @@ CONF_SLEEP_ENTITY = "sleep_entity"
 CONF_PRESENCE_ENTITY = "presence_entity"
 CONF_ROOM_LIGHTS = "room_lights"
 CONF_SLEEP_SCREEN_OFF = "sleep_screen_off"
+CONF_BACK_TO_PAGE_1_OFF = "back_to_page_1_off"
 
 DEFAULT_OPTIONS: dict[str, Any] = {
     CONF_FALLBACK_PAGE: 1,
     CONF_PAUSE_MINUTES: 5,
     CONF_ROOM_LIGHTS: [],
     CONF_SLEEP_SCREEN_OFF: True,
+    CONF_BACK_TO_PAGE_1_OFF: False,
 }
 
 # Page subentries

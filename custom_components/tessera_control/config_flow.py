@@ -33,6 +33,7 @@ from homeassistant.helpers.selector import (
 )
 
 from .const import (
+    CONF_BACK_TO_PAGE_1_OFF,
     CONF_DEVICE_ID,
     CONF_ENTITY,
     CONF_FALLBACK_PAGE,
@@ -147,6 +148,7 @@ OPTIONS_SCHEMA = vol.Schema(
             EntitySelectorConfig(domain="light", multiple=True)
         ),
         vol.Required(CONF_SLEEP_SCREEN_OFF): BooleanSelector(),
+        vol.Required(CONF_BACK_TO_PAGE_1_OFF): BooleanSelector(),
     }
 )
 

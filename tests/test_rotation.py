@@ -185,3 +185,49 @@ async def test_unload(hass: HomeAssistant, screen: Screen) -> None:
     await hass.async_block_till_done()
     await _later(hass, 31)
     assert screen.pages() == [1]
+
+
+async def test_back_to_page_1_kept_off(hass: HomeAssistant, screen: Screen) -> None:
+    """With the option, "Back to page 1" stays off, also without the rotation."""
+    back_to_page_1 = screen.entities["back_to_page_1"]
+    await screen.setup_entry(options={"back_to_page_1_off": True})
+    assert screen.calls("switch", "turn_off") == [{"entity_id": back_to_page_1}]
+    hass.states.async_set(back_to_page_1, "off")
+
+    # A firmware update: the screen restarts with "Back to page 1" on
+    hass.states.async_set(back_to_page_1, "unavailable")
+    await hass.async_block_till_done()
+    hass.states.async_set(back_to_page_1, "on")
+    await hass.async_block_till_done()
+    assert len(screen.calls("switch", "turn_off")) == 2
+    assert screen.pages() == []
+
+    # The rotation stops: "Back to page 1" is not turned on
+    hass.states.async_set(back_to_page_1, "off")
+    await _turn(hass, ROTATION, True)
+    await _turn(hass, ROTATION, False)
+    assert {"entity_id": back_to_page_1} not in screen.calls("switch", "turn_on")
+
+
+async def test_back_to_page_1_off_while_rotating(hass: HomeAssistant, screen: Screen) -> None:
+    """While the rotation runs, "Back to page 1" turned on is turned off again."""
+    back_to_page_1 = screen.entities["back_to_page_1"]
+    await screen.setup_entry()
+    await _turn(hass, ROTATION, True)
+    hass.states.async_set(back_to_page_1, "off")
+    turned_off = len(screen.calls("switch", "turn_off"))
+
+    hass.states.async_set(back_to_page_1, "on")
+    await hass.async_block_till_done()
+    assert len(screen.calls("switch", "turn_off")) == turned_off + 1
+
+
+async def test_back_to_page_1_left_alone(hass: HomeAssistant, screen: Screen) -> None:
+    """Without the option and without the rotation, "Back to page 1" is the screen's."""
+    back_to_page_1 = screen.entities["back_to_page_1"]
+    await screen.setup_entry()
+    hass.states.async_set(back_to_page_1, "unavailable")
+    await hass.async_block_till_done()
+    hass.states.async_set(back_to_page_1, "on")
+    await hass.async_block_till_done()
+    assert screen.calls("switch", "turn_off") == []

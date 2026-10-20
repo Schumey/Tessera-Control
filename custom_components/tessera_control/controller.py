@@ -15,6 +15,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_call_later, async_track_state_change_event
 
 from .const import (
+    CONF_BACK_TO_PAGE_1_OFF,
     CONF_ENTITY,
     CONF_FALLBACK_PAGE,
     CONF_PAGE,
@@ -79,6 +80,7 @@ class TesseraController:
         self.presence_entity: str | None = options.get(CONF_PRESENCE_ENTITY)
         self.room_lights: list[str] = list(options[CONF_ROOM_LIGHTS])
         self.sleep_screen_off = bool(options[CONF_SLEEP_SCREEN_OFF])
+        self.back_to_page_1_off = bool(options[CONF_BACK_TO_PAGE_1_OFF])
 
         self.rules = [
             PageRule(
@@ -139,8 +141,9 @@ class TesseraController:
 
     async def async_begin(self) -> None:
         """Apply the restored switches once everything is set up."""
-        if self.rotation_on:
+        if self.keeps_back_to_page_1_off:
             await self._set_back_to_page_1(on=False)
+        if self.rotation_on:
             await self._rotate(RESTART)
         if self.brightness_on:
             await self._apply_brightness()
@@ -156,7 +159,10 @@ class TesseraController:
     # What the entities ask for
 
     async def async_set_rotation(self, on: bool) -> None:
-        """Switch the rotation on or off; off gives the screen its "Back to page 1"."""
+        """Switch the rotation on or off; off gives the screen its "Back to page 1".
+
+        Not with the option "Back to page 1 off": then it stays off.
+        """
         self.rotation_on = on
         self._notify()
         if on:
@@ -164,7 +170,8 @@ class TesseraController:
             await self._rotate(RESTART)
         else:
             self._cancel()
-            await self._set_back_to_page_1(on=True)
+            if not self.back_to_page_1_off:
+                await self._set_back_to_page_1(on=True)
 
     async def async_set_interval(self, seconds: int) -> None:
         """Change the seconds between two pages, from the next page on."""
@@ -202,6 +209,11 @@ class TesseraController:
     def sleeping(self) -> bool:
         """The sleep entity is on."""
         return bool(self.sleep_entity) and self._state(self.sleep_entity) == "on"
+
+    @property
+    def keeps_back_to_page_1_off(self) -> bool:
+        """The screen's "Back to page 1" is to be off: for the rotation, or by the option."""
+        return self.rotation_on or self.back_to_page_1_off
 
     def _state(self, entity_id: str) -> str | None:
         state = self.hass.states.get(entity_id)
@@ -245,15 +257,25 @@ class TesseraController:
 
     @callback
     def _on_screen_change(self, event: Event[EventStateChangedData]) -> None:
-        """The screen came back after it was offline: show its page and brightness again."""
+        """The screen came back after it was offline: show its page and brightness again.
+
+        "Back to page 1" turned on (the firmware does so after a restart or an update):
+        off again while it is to be off.
+        """
         old, new = event.data["old_state"], event.data["new_state"]
         if new is None or new.state in NOT_THERE:
             return
-        if old is not None and old.state not in NOT_THERE:
-            return
-        if self.rotation_on and event.data["entity_id"] == self.screen.back_to_page_1:
-            self._run(self._resume_rotation())
-        if self.brightness_on and event.data["entity_id"] == self.screen.brightness:
+        came_back = old is None or old.state in NOT_THERE
+        if event.data["entity_id"] == self.screen.back_to_page_1:
+            if self.rotation_on and came_back:
+                self._run(self._resume_rotation())
+            elif new.state == "on" and self.keeps_back_to_page_1_off:
+                self._run(self._set_back_to_page_1(on=False))
+        if (
+            came_back
+            and self.brightness_on
+            and event.data["entity_id"] == self.screen.brightness
+        ):
             self._was_sleeping = None
             self._run(self._apply_brightness())
 

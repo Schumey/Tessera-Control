@@ -90,12 +90,14 @@ async def test_options_flow(hass: HomeAssistant, screen: Screen) -> None:
             "sleep_entity": "binary_sensor.sleep",
             "room_lights": ["light.ceiling"],
             "sleep_screen_off": True,
+            "back_to_page_1_off": True,
         },
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     await hass.async_block_till_done()
     assert entry.options["pause_minutes"] == 10
     assert entry.options["fallback_page"] == 1
+    assert entry.options["back_to_page_1_off"] is True
     assert "presence_entity" not in entry.options
 
 

@@ -7,7 +7,13 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
 
-from .const import CONF_DEVICE_ID, CONF_SHOW_PAGE_SERVICE, DOMAIN, SCREEN_BACK_TO_PAGE_1
+from .const import (
+    CONF_BACK_TO_PAGE_1_OFF,
+    CONF_DEVICE_ID,
+    CONF_SHOW_PAGE_SERVICE,
+    DOMAIN,
+    SCREEN_BACK_TO_PAGE_1,
+)
 from .controller import TesseraController
 from .screen import resolve_screen, screen_entities
 
@@ -50,8 +56,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: TesseraConfigEntry) -> 
 
 
 async def async_remove_entry(hass: HomeAssistant, entry: TesseraConfigEntry) -> None:
-    """Give the screen its own "Back to page 1" again."""
-    entity = screen_entities(hass, entry.data[CONF_DEVICE_ID])[SCREEN_BACK_TO_PAGE_1]
+    """Give the screen its own "Back to page 1" again, unless it was to stay off."""
+    if entry.options.get(CONF_BACK_TO_PAGE_1_OFF):
+        return
+    entity =screen_entities(hass, entry.data[CONF_DEVICE_ID])[SCREEN_BACK_TO_PAGE_1]
     state = hass.states.get(entity) if entity else None
     if state is not None and state.state == "off":
         await hass.services.async_call(

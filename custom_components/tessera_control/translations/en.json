@@ -114,6 +114,7 @@
     "step": {
       "init": {
         "data": {
+          "back_to_page_1_off": "Keep \"Back to page 1\" off",
           "fallback_page": "Fallback page",
           "pause_minutes": "Pause after a button",
           "presence_entity": "Presence",
@@ -122,6 +123,7 @@
           "sleep_screen_off": "Screen off while asleep"
         },
         "data_description": {
+          "back_to_page_1_off": "The screen turns \"Back to page 1\" on again after every restart and firmware update. On: Tessera Control turns it off each time, also without the rotation. Off: only the rotation keeps it off.",
           "fallback_page": "Shown when no page applies.",
           "pause_minutes": "How long the rotation waits after a page button was pressed.",
           "presence_entity": "On or home while someone is home. Without it, someone is always home. Away means the dim level.",
