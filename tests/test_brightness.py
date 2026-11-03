@@ -120,7 +120,10 @@ async def test_level_applies_at_once(hass: HomeAssistant, screen: Screen) -> Non
 
 
 async def test_situations_pick_their_level(hass: HomeAssistant, screen: Screen) -> None:
-    """Each situation gets the level the options give it."""
+    """Each situation gets the level the options give it.
+
+    The fake screen stays at 100 %, so level 1 would set nothing.
+    """
     hass.states.async_set("input_boolean.home", "on")
     hass.states.async_set("binary_sensor.sleep", "off")
     hass.states.async_set("light.ceiling", "off")
@@ -129,8 +132,8 @@ async def test_situations_pick_their_level(hass: HomeAssistant, screen: Screen) 
             **OPTIONS,
             "sleep_screen_off": False,
             "day_level": 2,
-            "evening_level": 1,
-            "dark_level": 1,
+            "evening_level": 2,
+            "dark_level": 3,
             "away_level": 2,
             "asleep_level": 3,
         }
@@ -140,13 +143,13 @@ async def test_situations_pick_their_level(hass: HomeAssistant, screen: Screen) 
     assert _levels(screen) == [60]  # day: level 2
 
     await _set(hass, "sun.sun", "below_horizon")
-    assert _levels(screen) == [60, 100]  # dark room: level 1
+    assert _levels(screen) == [60, 20]  # dark room: level 3
 
     await _set(hass, "input_boolean.home", "off")
-    assert _levels(screen) == [60, 100, 60]  # away: level 2
+    assert _levels(screen) == [60, 20, 60]  # away: level 2
 
     await _set(hass, "binary_sensor.sleep", "on")
-    assert _levels(screen) == [60, 100, 60, 20]  # asleep: level 3
+    assert _levels(screen) == [60, 20, 60, 20]  # asleep: level 3
 
 
 async def test_old_levels_keep_entity_ids(hass: HomeAssistant, screen: Screen) -> None:

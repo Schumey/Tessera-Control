@@ -40,9 +40,9 @@ async def test_entities_after_setup(hass: HomeAssistant, screen: Screen) -> None
     assert hass.states.get(ROTATION).state == "off"
     assert hass.states.get("switch.moin_automatic_brightness").state == "off"
     assert hass.states.get(INTERVAL).state == "30"
-    assert hass.states.get("number.moin_brightness_day").state == "100"
-    assert hass.states.get("number.moin_brightness_evening").state == "60"
-    assert hass.states.get("number.moin_brightness_dim").state == "20"
+    assert hass.states.get("number.moin_brightness_level_1").state == "100"
+    assert hass.states.get("number.moin_brightness_level_2").state == "60"
+    assert hass.states.get("number.moin_brightness_level_3").state == "20"
     assert hass.states.get(PAGES).state == "1"
     assert hass.states.get(PAGES).attributes["pages"] == [1]
     for name in ("start", "pc", "drucker"):
