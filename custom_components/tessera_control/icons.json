@@ -6,14 +6,8 @@
       }
     },
     "number": {
-      "brightness_day": {
-        "default": "mdi:brightness-7"
-      },
-      "brightness_dim": {
-        "default": "mdi:brightness-4"
-      },
-      "brightness_evening": {
-        "default": "mdi:brightness-5"
+      "brightness_level": {
+        "default": "mdi:brightness-6"
       },
       "rotation_interval": {
         "default": "mdi:timer-cog-outline"

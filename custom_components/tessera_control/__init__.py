@@ -4,14 +4,16 @@ from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryError
+from homeassistant.helpers import entity_registry as er
 
 from .const import (
     CONF_BACK_TO_PAGE_1_OFF,
     CONF_DEVICE_ID,
     CONF_SHOW_PAGE_SERVICE,
     DOMAIN,
+    OLD_LEVEL_KEYS,
     SCREEN_BACK_TO_PAGE_1,
 )
 from .controller import TesseraController
@@ -32,6 +34,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: TesseraConfigEntry) -> b
             translation_domain=DOMAIN, translation_key="screen_missing"
         )
 
+    await _async_migrate_levels(hass, entry)
     controller = TesseraController(hass, entry, screen)
     entry.runtime_data = controller
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -43,6 +46,25 @@ async def async_setup_entry(hass: HomeAssistant, entry: TesseraConfigEntry) -> b
         hass, controller.async_begin(), f"{DOMAIN} begin {entry.entry_id}"
     )
     return True
+
+
+async def _async_migrate_levels(hass: HomeAssistant, entry: TesseraConfigEntry) -> None:
+    """Give the levels of 0.4.0 and before (day, evening, dim) their new unique IDs.
+
+    Their entity IDs and values stay.
+    """
+    old_ids = {
+        f"{entry.entry_id}_{key}": f"{entry.entry_id}_level_{level}"
+        for key, level in OLD_LEVEL_KEYS.items()
+    }
+
+    @callback
+    def migrate(entity: er.RegistryEntry) -> dict[str, str] | None:
+        if new_id := old_ids.get(entity.unique_id):
+            return {"new_unique_id": new_id}
+        return None
+
+    await er.async_migrate_entries(hass, entry.entry_id, migrate)
 
 
 async def _async_update_listener(hass: HomeAssistant, entry: TesseraConfigEntry) -> None:

@@ -75,14 +75,8 @@
       }
     },
     "number": {
-      "brightness_day": {
-        "name": "Helligkeit Tag"
-      },
-      "brightness_dim": {
-        "name": "Helligkeit gedimmt"
-      },
-      "brightness_evening": {
-        "name": "Helligkeit Abend"
+      "brightness_level": {
+        "name": "Helligkeit Stufe {level}"
       },
       "rotation_interval": {
         "name": "Rotationsintervall"
@@ -114,7 +108,12 @@
     "step": {
       "init": {
         "data": {
+          "asleep_level": "Stufe beim Schlafen",
+          "away_level": "Stufe, wenn niemand da ist",
           "back_to_page_1_off": "„Back to page 1“ immer aus",
+          "dark_level": "Stufe bei dunklem Raum",
+          "day_level": "Stufe tagsüber",
+          "evening_level": "Stufe abends",
           "fallback_page": "Ersatzseite",
           "pause_minutes": "Pause nach einem Knopf",
           "presence_entity": "Anwesenheit",
@@ -123,13 +122,18 @@
           "sleep_screen_off": "Display aus beim Schlafen"
         },
         "data_description": {
+          "asleep_level": "Während du schläfst, nur mit „Display aus beim Schlafen“ aus.",
+          "away_level": "Solange die Anwesenheits-Entität sagt, dass niemand zu Hause ist. Geht vor Tag, Abend und dunklem Raum.",
           "back_to_page_1_off": "Das Display schaltet „Back to page 1“ nach jedem Neustart und Firmware-Update wieder ein. An: Tessera Control schaltet es dann jedes Mal aus, auch ohne Rotation. Aus: Nur die Rotation hält es aus.",
+          "dark_level": "Nach Sonnenuntergang, wenn alle Raumleuchten aus sind.",
+          "day_level": "Helligkeitsstufe 1, 2 oder 3, solange die Sonne oben ist.",
+          "evening_level": "Nach Sonnenuntergang, solange mindestens eine Raumleuchte an ist (oder ohne Raumleuchten).",
           "fallback_page": "Wird gezeigt, wenn keine Seite passt.",
           "pause_minutes": "So lange wartet die Rotation, nachdem ein Seitenknopf gedrückt wurde.",
-          "presence_entity": "An oder home, solange jemand zu Hause ist. Ohne sie gilt immer jemand als zu Hause. Abwesend heißt gedimmt.",
-          "room_lights": "Nach Sonnenuntergang gilt der Raum als dunkel, wenn alle aus sind: gedimmt. Ohne Leuchten gilt die Abend-Helligkeit.",
+          "presence_entity": "An oder home, solange jemand zu Hause ist. Ohne sie gilt immer jemand als zu Hause.",
+          "room_lights": "Nach Sonnenuntergang gilt der Raum als dunkel, wenn alle aus sind. Ohne Leuchten ist der Raum nie dunkel.",
           "sleep_entity": "An, während du schläfst: Die Rotation ruht und das Display geht aus.",
-          "sleep_screen_off": "Aus: Das Display bleibt stattdessen gedimmt an."
+          "sleep_screen_off": "Aus: Das Display bleibt stattdessen auf der Stufe beim Schlafen an."
         },
         "title": "Rotation und Helligkeit"
       }

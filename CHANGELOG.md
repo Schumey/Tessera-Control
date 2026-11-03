@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0
+
+- The brightness levels are **Brightness level 1**, **2** and **3** now, no longer day, evening and dim. Configure says
+  which level each situation gets: by day, in the evening, in a dark room, while nobody is home, and while asleep
+  (with *Screen off while asleep* off). At first the same as before: 1 by day, 2 in the evening, 3 otherwise.
+- Day, evening and dim become levels 1, 2 and 3 on their own: entity IDs and values stay, only the names change.
+- Nobody home and a dark room are two situations now, each with its own level.
+
 ## 0.4.0
 
 - New option **Keep "Back to page 1" off** (Configure): the screen turns "Back to page 1" on again after every restart

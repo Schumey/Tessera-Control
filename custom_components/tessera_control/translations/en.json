@@ -75,14 +75,8 @@
       }
     },
     "number": {
-      "brightness_day": {
-        "name": "Brightness day"
-      },
-      "brightness_dim": {
-        "name": "Brightness dim"
-      },
-      "brightness_evening": {
-        "name": "Brightness evening"
+      "brightness_level": {
+        "name": "Brightness level {level}"
       },
       "rotation_interval": {
         "name": "Rotation interval"
@@ -114,7 +108,12 @@
     "step": {
       "init": {
         "data": {
+          "asleep_level": "Level while asleep",
+          "away_level": "Level while nobody is home",
           "back_to_page_1_off": "Keep \"Back to page 1\" off",
+          "dark_level": "Level in a dark room",
+          "day_level": "Level by day",
+          "evening_level": "Level in the evening",
           "fallback_page": "Fallback page",
           "pause_minutes": "Pause after a button",
           "presence_entity": "Presence",
@@ -123,13 +122,18 @@
           "sleep_screen_off": "Screen off while asleep"
         },
         "data_description": {
+          "asleep_level": "While asleep, only with \"Screen off while asleep\" off.",
+          "away_level": "While the presence entity says nobody is home. Comes before day, evening and dark room.",
           "back_to_page_1_off": "The screen turns \"Back to page 1\" on again after every restart and firmware update. On: Tessera Control turns it off each time, also without the rotation. Off: only the rotation keeps it off.",
+          "dark_level": "After sunset, while every room light is off.",
+          "day_level": "Brightness level 1, 2 or 3 while the sun is up.",
+          "evening_level": "After sunset, while at least one room light is on (or without room lights).",
           "fallback_page": "Shown when no page applies.",
           "pause_minutes": "How long the rotation waits after a page button was pressed.",
-          "presence_entity": "On or home while someone is home. Without it, someone is always home. Away means the dim level.",
-          "room_lights": "After sunset the room counts as dark when all of them are off: the dim level. Without lights, the evening level is used.",
+          "presence_entity": "On or home while someone is home. Without it, someone is always home.",
+          "room_lights": "After sunset the room counts as dark when all of them are off. Without lights, the room is never dark.",
           "sleep_entity": "On while you sleep: the rotation rests and the screen goes off.",
-          "sleep_screen_off": "Off: the screen stays on at the dim level instead."
+          "sleep_screen_off": "Off: the screen stays on at the level for asleep instead."
         },
         "title": "Rotation and brightness"
       }

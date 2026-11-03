@@ -15,8 +15,13 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_call_later, async_track_state_change_event
 
 from .const import (
+    CONF_ASLEEP_LEVEL,
+    CONF_AWAY_LEVEL,
     CONF_BACK_TO_PAGE_1_OFF,
+    CONF_DARK_LEVEL,
+    CONF_DAY_LEVEL,
     CONF_ENTITY,
+    CONF_EVENING_LEVEL,
     CONF_FALLBACK_PAGE,
     CONF_PAGE,
     CONF_PAUSE_MINUTES,
@@ -31,20 +36,22 @@ from .const import (
     DEFAULT_OPTIONS,
     DOMAIN,
     ESPHOME_DOMAIN,
-    LEVEL_DAY,
-    LEVEL_DIM,
-    LEVEL_EVENING,
     SHOW_ALWAYS,
     SUBENTRY_PAGE,
 )
 from .logic import (
+    ASLEEP,
+    AWAY,
+    DARK,
+    DAY,
+    EVENING,
     PageRule,
     active_pages,
     is_lit,
     is_present,
     page_after,
     page_after_change,
-    target_brightness,
+    situation,
 )
 
 if TYPE_CHECKING:
@@ -81,6 +88,13 @@ class TesseraController:
         self.room_lights: list[str] = list(options[CONF_ROOM_LIGHTS])
         self.sleep_screen_off = bool(options[CONF_SLEEP_SCREEN_OFF])
         self.back_to_page_1_off = bool(options[CONF_BACK_TO_PAGE_1_OFF])
+        self.situation_levels = {
+            DAY: int(options[CONF_DAY_LEVEL]),
+            EVENING: int(options[CONF_EVENING_LEVEL]),
+            DARK: int(options[CONF_DARK_LEVEL]),
+            AWAY: int(options[CONF_AWAY_LEVEL]),
+            ASLEEP: int(options[CONF_ASLEEP_LEVEL]),
+        }
 
         self.rules = [
             PageRule(
@@ -97,7 +111,7 @@ class TesseraController:
         self.rotation_on = False
         self.brightness_on = False
         self.interval = DEFAULT_INTERVAL
-        self.levels: dict[str, int] = dict(DEFAULT_LEVELS)
+        self.levels: dict[int, int] = dict(DEFAULT_LEVELS)
 
         self.current_page: int | None = None
         self.pages: list[int] = [self.fallback_page]
@@ -188,7 +202,7 @@ class TesseraController:
         if on:
             await self._apply_brightness()
 
-    async def async_set_level(self, level: str, value: int) -> None:
+    async def async_set_level(self, level: int, value: int) -> None:
         """Change one brightness level; it applies at once."""
         self.levels[level] = value
         self._notify()
@@ -359,20 +373,15 @@ class TesseraController:
                 return
             if was_sleeping is not False and self.screen.wake:
                 await self._call("button", "press", self.screen.wake)
-            if sleeping:
-                level = self.levels[LEVEL_DIM]
-            else:
-                level = target_brightness(
-                    present=self.presence_entity is None
-                    or is_present(self._state(self.presence_entity)),
-                    sun_up=self._state(SUN) != "below_horizon",
-                    room_lit=not self.room_lights
-                    or is_lit(self._state(light) for light in self.room_lights),
-                    day=self.levels[LEVEL_DAY],
-                    evening=self.levels[LEVEL_EVENING],
-                    dim=self.levels[LEVEL_DIM],
-                )
-            await self._set_brightness(level)
+            now = situation(
+                asleep=sleeping,
+                present=self.presence_entity is None
+                or is_present(self._state(self.presence_entity)),
+                sun_up=self._state(SUN) != "below_horizon",
+                room_lit=not self.room_lights
+                or is_lit(self._state(light) for light in self.room_lights),
+            )
+            await self._set_brightness(self.levels[self.situation_levels[now]])
 
     async def _set_brightness(self, level: int) -> None:
         entity = self.screen.brightness

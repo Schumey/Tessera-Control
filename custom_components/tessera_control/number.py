@@ -1,4 +1,4 @@
-"""Numbers of Tessera Control: the rotation interval and the three brightness levels."""
+"""Numbers of Tessera Control: the rotation interval and the brightness levels."""
 
 from __future__ import annotations
 
@@ -11,9 +11,6 @@ from . import TesseraConfigEntry
 from .const import (
     DEFAULT_INTERVAL,
     DEFAULT_LEVELS,
-    LEVEL_DAY,
-    LEVEL_DIM,
-    LEVEL_EVENING,
     MAX_INTERVAL,
     MIN_INTERVAL,
     MIN_LEVEL,
@@ -32,7 +29,7 @@ async def async_setup_entry(
     async_add_entities(
         [
             IntervalNumber(controller),
-            *(LevelNumber(controller, level) for level in (LEVEL_DAY, LEVEL_EVENING, LEVEL_DIM)),
+            *(LevelNumber(controller, level) for level in DEFAULT_LEVELS),
         ]
     )
 
@@ -89,7 +86,7 @@ class IntervalNumber(_RestoredNumber):
 
 
 class LevelNumber(_RestoredNumber):
-    """One brightness level: day, evening or dim."""
+    """One brightness level, 1 to 3; the options say which situation gets which."""
 
     _attr_mode = NumberMode.SLIDER
     _attr_native_min_value = MIN_LEVEL
@@ -97,9 +94,11 @@ class LevelNumber(_RestoredNumber):
     _attr_native_step = 5
     _attr_native_unit_of_measurement = PERCENTAGE
 
-    def __init__(self, controller: TesseraController, level: str) -> None:
+    def __init__(self, controller: TesseraController, level: int) -> None:
         """Create the number for one level."""
-        super().__init__(controller, level)
+        super().__init__(controller, "brightness_level")
+        self._attr_unique_id = f"{controller.entry.entry_id}_level_{level}"
+        self._attr_translation_placeholders = {"level": str(level)}
         self._level = level
 
     def _default(self) -> int:

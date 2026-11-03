@@ -33,9 +33,14 @@ from homeassistant.helpers.selector import (
 )
 
 from .const import (
+    CONF_ASLEEP_LEVEL,
+    CONF_AWAY_LEVEL,
     CONF_BACK_TO_PAGE_1_OFF,
+    CONF_DARK_LEVEL,
+    CONF_DAY_LEVEL,
     CONF_DEVICE_ID,
     CONF_ENTITY,
+    CONF_EVENING_LEVEL,
     CONF_FALLBACK_PAGE,
     CONF_PAGE,
     CONF_PAGE_NAME,
@@ -47,6 +52,7 @@ from .const import (
     CONF_SLEEP_ENTITY,
     CONF_SLEEP_SCREEN_OFF,
     CONF_STATES,
+    DEFAULT_LEVELS,
     DEFAULT_OPTIONS,
     DOMAIN,
     ESPHOME_DOMAIN,
@@ -60,6 +66,11 @@ from .screen import resolve_screen
 
 PAGE_NUMBER = NumberSelector(
     NumberSelectorConfig(min=1, max=MAX_PAGE, step=1, mode=NumberSelectorMode.BOX)
+)
+LEVEL_NUMBER = NumberSelector(
+    NumberSelectorConfig(
+        min=1, max=len(DEFAULT_LEVELS), step=1, mode=NumberSelectorMode.SLIDER
+    )
 )
 
 
@@ -147,7 +158,12 @@ OPTIONS_SCHEMA = vol.Schema(
         vol.Optional(CONF_ROOM_LIGHTS): EntitySelector(
             EntitySelectorConfig(domain="light", multiple=True)
         ),
+        vol.Required(CONF_DAY_LEVEL): LEVEL_NUMBER,
+        vol.Required(CONF_EVENING_LEVEL): LEVEL_NUMBER,
+        vol.Required(CONF_DARK_LEVEL): LEVEL_NUMBER,
+        vol.Required(CONF_AWAY_LEVEL): LEVEL_NUMBER,
         vol.Required(CONF_SLEEP_SCREEN_OFF): BooleanSelector(),
+        vol.Required(CONF_ASLEEP_LEVEL): LEVEL_NUMBER,
         vol.Required(CONF_BACK_TO_PAGE_1_OFF): BooleanSelector(),
     }
 )

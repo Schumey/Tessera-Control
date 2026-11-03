@@ -102,22 +102,20 @@ def test_is_lit():
     assert logic.is_lit([]) is False
 
 
-LEVELS = {"day": 100, "evening": 60, "dim": 20}
-
-
 @pytest.mark.parametrize(
-    ("present", "sun_up", "room_lit", "expected"),
+    ("asleep", "present", "sun_up", "room_lit", "expected"),
     [
-        (True, True, False, 100),
-        (True, True, True, 100),
-        (True, False, True, 60),
-        (True, False, False, 20),
-        (False, True, True, 20),
-        (False, False, True, 20),
+        (False, True, True, False, logic.DAY),
+        (False, True, True, True, logic.DAY),
+        (False, True, False, True, logic.EVENING),
+        (False, True, False, False, logic.DARK),
+        (False, False, True, True, logic.AWAY),
+        (False, False, False, False, logic.AWAY),
+        (True, False, True, True, logic.ASLEEP),
     ],
 )
-def test_target_brightness(present, sun_up, room_lit, expected):
+def test_situation(asleep, present, sun_up, room_lit, expected):
     assert (
-        logic.target_brightness(present=present, sun_up=sun_up, room_lit=room_lit, **LEVELS)
+        logic.situation(asleep=asleep, present=present, sun_up=sun_up, room_lit=room_lit)
         == expected
     )

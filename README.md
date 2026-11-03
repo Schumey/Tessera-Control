@@ -8,8 +8,8 @@ screen into a status display that runs by itself:
 - **Page rotation.** The screen moves through its pages at an interval you set.
 - **Pages by situation.** Each page is in the rotation always, or only while an entity has certain states: the PC
   page while the PC is on, the printer page while it prints. A page that joins shows at once.
-- **Brightness by situation.** One level by day, one in the evening, a dim one when nobody is home or the room is
-  dark, each set with a slider; the screen goes off while you sleep.
+- **Brightness by situation.** Three brightness levels, each set with a slider, and for every situation (day,
+  evening, dark room, nobody home) the level it gets; the screen goes off while you sleep.
 - **A button per page** for dashboards and scripts: it shows the page and pauses the rotation for a few minutes.
 
 Nothing is installed on the screen, and nothing needs a firmware build: the integration uses the action and entities
@@ -36,8 +36,8 @@ Home Assistant 2026.10 or later.
    - **Page number**: the page's number on the screen; the first page is 1.
    - **In the rotation**: *Always*, or *When an entity is in one of these states* with the entity and its states
      (for a printer: `printing`, `paused`).
-3. **Configure** sets what the brightness follows: a sleep entity, a presence entity, the room's lights. All
-   optional.
+3. **Configure** sets what the brightness follows: a sleep entity, a presence entity, the room's lights (all
+   optional), and which level each situation gets.
 4. Turn on **Page rotation** and **Automatic brightness** on the screen's device page.
 
 A page can be changed or deleted on the entry at any time.
@@ -51,24 +51,26 @@ All on the screen's own device page:
 | Page rotation (switch) | Rotation on or off. Off gives the screen its own "Back to page 1" again, unless *Keep "Back to page 1" off* is set. |
 | Automatic brightness (switch) | Brightness by situation on or off. Off keeps the last brightness. |
 | Rotation interval (number) | Seconds between two pages, 10 to 600. |
-| Brightness day, evening, dim (numbers) | The three levels, 5 to 100 %, as sliders. A new level applies at once. |
+| Brightness level 1, 2, 3 (numbers) | The three levels, 5 to 100 %, as sliders. A new level applies at once. |
 | Pages in rotation (sensor) | The pages in the rotation now, such as `1,2,3`, and as the attribute `pages`. |
 | Current page (sensor) | The page Tessera Control showed last. |
 | Show *name* (button) | One per page: shows it and pauses the rotation (Configure → *Pause after a button*). |
 
 ### Brightness
 
-The first rule that fits wins:
+The levels are 100, 60 and 20 % at first. Configure says which level each situation gets; the first situation that
+fits wins:
 
-| Situation | Screen |
-|---|---|
-| The sleep entity is on | off (or *Brightness dim*, see *Screen off while asleep*) |
-| Nobody is home, or after sunset with every room light off | *Brightness dim* (20 % at first) |
-| After sunset | *Brightness evening* (60 % at first) |
-| Otherwise | *Brightness day* (100 % at first) |
+| Situation | Option | Level at first |
+|---|---|---|
+| The sleep entity is on | *Level while asleep*, only with *Screen off while asleep* off; otherwise the screen goes off | 3 |
+| Nobody is home | *Level while nobody is home* | 3 |
+| After sunset with every room light off | *Level in a dark room* | 3 |
+| After sunset | *Level in the evening* | 2 |
+| Otherwise | *Level by day* | 1 |
 
 A light that is unavailable counts as off. Without a presence entity someone is always home; without room lights
-the evening level applies after sunset.
+the room is never dark.
 
 ### Rotation
 

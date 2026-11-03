@@ -109,12 +109,12 @@ class Screen:
             if event.data["domain"] == domain and event.data["service"] == service
         ]
 
-    async def setup_entry(
+    def add_entry(
         self,
         options: dict[str, Any] | None = None,
         pages: list[ConfigSubentryData] | None = None,
     ) -> MockConfigEntry:
-        """Set up Tessera Control for the screen."""
+        """Add a Tessera Control entry for the screen, not set up yet."""
         entry = MockConfigEntry(
             domain=DOMAIN,
             title="Moin!",
@@ -124,6 +124,15 @@ class Screen:
             subentries_data=PAGES if pages is None else pages,
         )
         entry.add_to_hass(self.hass)
+        return entry
+
+    async def setup_entry(
+        self,
+        options: dict[str, Any] | None = None,
+        pages: list[ConfigSubentryData] | None = None,
+    ) -> MockConfigEntry:
+        """Set up Tessera Control for the screen."""
+        entry = self.add_entry(options, pages)
         assert await self.hass.config_entries.async_setup(entry.entry_id)
         await self.hass.async_block_till_done()
         return entry

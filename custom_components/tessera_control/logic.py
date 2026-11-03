@@ -7,6 +7,13 @@ from dataclasses import dataclass, field
 
 PRESENT_STATES = frozenset({"on", "home"})
 
+# The situations the brightness follows; each gets one of the levels
+DAY = "day"
+EVENING = "evening"
+DARK = "dark"
+AWAY = "away"
+ASLEEP = "asleep"
+
 
 @dataclass(frozen=True)
 class PageRule:
@@ -74,18 +81,12 @@ def is_lit(states: Iterable[str | None]) -> bool:
     return any(state == "on" for state in states)
 
 
-def target_brightness(
-    *,
-    present: bool,
-    sun_up: bool,
-    room_lit: bool,
-    day: int,
-    evening: int,
-    dim: int,
-) -> int:
-    """The brightness for the situation; the first rule that fits wins."""
-    if not present or (not sun_up and not room_lit):
-        return dim
+def situation(*, asleep: bool, present: bool, sun_up: bool, room_lit: bool) -> str:
+    """The situation the brightness follows; the first rule that fits wins."""
+    if asleep:
+        return ASLEEP
+    if not present:
+        return AWAY
     if not sun_up:
-        return evening
-    return day
+        return EVENING if room_lit else DARK
+    return DAY

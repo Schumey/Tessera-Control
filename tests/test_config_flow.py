@@ -91,6 +91,11 @@ async def test_options_flow(hass: HomeAssistant, screen: Screen) -> None:
             "room_lights": ["light.ceiling"],
             "sleep_screen_off": True,
             "back_to_page_1_off": True,
+            "day_level": 1.0,
+            "evening_level": 2.0,
+            "dark_level": 3.0,
+            "away_level": 2.0,
+            "asleep_level": 3.0,
         },
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
@@ -98,6 +103,7 @@ async def test_options_flow(hass: HomeAssistant, screen: Screen) -> None:
     assert entry.options["pause_minutes"] == 10
     assert entry.options["fallback_page"] == 1
     assert entry.options["back_to_page_1_off"] is True
+    assert entry.options["away_level"] == 2
     assert "presence_entity" not in entry.options
 
 

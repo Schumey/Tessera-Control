@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
-from homeassistant.core import HomeAssistant
+from pytest_homeassistant_custom_component.common import mock_restore_cache_with_extra_data
+
+from homeassistant.core import HomeAssistant, State
+from homeassistant.helpers import entity_registry as er
+
+from custom_components.tessera_control.const import DOMAIN
 
 from .conftest import Screen
 
@@ -106,9 +111,67 @@ async def test_level_applies_at_once(hass: HomeAssistant, screen: Screen) -> Non
     await hass.services.async_call(
         "number",
         "set_value",
-        {"entity_id": "number.moin_brightness_evening", "value": 40},
+        {"entity_id": "number.moin_brightness_level_2", "value": 40},
         blocking=True,
     )
     await hass.async_block_till_done()
-    assert hass.states.get("number.moin_brightness_evening").state == "40"
+    assert hass.states.get("number.moin_brightness_level_2").state == "40"
     assert _levels(screen)[-1] == 40
+
+
+async def test_situations_pick_their_level(hass: HomeAssistant, screen: Screen) -> None:
+    """Each situation gets the level the options give it."""
+    hass.states.async_set("input_boolean.home", "on")
+    hass.states.async_set("binary_sensor.sleep", "off")
+    hass.states.async_set("light.ceiling", "off")
+    await screen.setup_entry(
+        options={
+            **OPTIONS,
+            "sleep_screen_off": False,
+            "day_level": 2,
+            "evening_level": 1,
+            "dark_level": 1,
+            "away_level": 2,
+            "asleep_level": 3,
+        }
+    )
+    await hass.services.async_call("switch", "turn_on", {"entity_id": SWITCH}, blocking=True)
+    await hass.async_block_till_done()
+    assert _levels(screen) == [60]  # day: level 2
+
+    await _set(hass, "sun.sun", "below_horizon")
+    assert _levels(screen) == [60, 100]  # dark room: level 1
+
+    await _set(hass, "input_boolean.home", "off")
+    assert _levels(screen) == [60, 100, 60]  # away: level 2
+
+    await _set(hass, "binary_sensor.sleep", "on")
+    assert _levels(screen) == [60, 100, 60, 20]  # asleep: level 3
+
+
+async def test_old_levels_keep_entity_ids(hass: HomeAssistant, screen: Screen) -> None:
+    """The day, evening and dim levels of 0.4.0 become levels 1 to 3, entity ID and value kept."""
+    entry = screen.add_entry()
+    old = er.async_get(hass).async_get_or_create(
+        "number",
+        DOMAIN,
+        f"{entry.entry_id}_brightness_evening",
+        suggested_object_id="moin_brightness_evening",
+        config_entry=entry,
+    )
+    restored = {
+        "native_value": 45,
+        "native_min_value": 5,
+        "native_max_value": 100,
+        "native_step": 5,
+        "native_unit_of_measurement": "%",
+    }
+    mock_restore_cache_with_extra_data(hass, [(State(old.entity_id, "45"), restored)])
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert er.async_get(hass).async_get_entity_id(
+        "number", DOMAIN, f"{entry.entry_id}_level_2"
+    ) == old.entity_id
+    assert hass.states.get(old.entity_id).state == "45"
+    assert entry.runtime_data.levels[2] == 45
