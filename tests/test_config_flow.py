@@ -30,6 +30,30 @@ async def test_user_flow(hass: HomeAssistant, screen: Screen) -> None:
         "show_page_service": SHOW_PAGE,
     }
     assert result["result"].unique_id == screen.device.id
+    assert not result["result"].subentries
+
+
+async def test_user_flow_with_pages(hass: HomeAssistant, screen: Screen) -> None:
+    """With the number of pages, setting up adds them all."""
+    hass.config.language = "de"
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": SOURCE_USER}
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"], {"device_id": screen.device.id, "page_count": 3.0}
+    )
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    await hass.async_block_till_done()
+    pages = sorted(
+        (subentry.data["page"], subentry.title, dict(subentry.data))
+        for subentry in result["result"].subentries.values()
+    )
+    assert pages == [
+        (1, "Seite 1", {"page": 1, "show": "always"}),
+        (2, "Seite 2", {"page": 2, "show": "always"}),
+        (3, "Seite 3", {"page": 3, "show": "always"}),
+    ]
+    assert hass.states.get("button.moin_show_seite_3") is not None
 
 
 async def test_user_flow_already_configured(hass: HomeAssistant, screen: Screen) -> None:
@@ -113,6 +137,10 @@ async def test_add_and_change_page(hass: HomeAssistant, screen: Screen) -> None:
     result = await hass.config_entries.subentries.async_init(
         (entry.entry_id, "page"), context={"source": SOURCE_USER}
     )
+    assert result["type"] is FlowResultType.MENU
+    result = await hass.config_entries.subentries.async_configure(
+        result["flow_id"], {"next_step_id": "page"}
+    )
     assert result["type"] is FlowResultType.FORM
 
     result = await hass.config_entries.subentries.async_configure(
@@ -159,3 +187,51 @@ async def test_add_and_change_page(hass: HomeAssistant, screen: Screen) -> None:
         "page": 4,
         "show": "always",
     }
+
+
+async def _add_all_pages(hass: HomeAssistant, entry_id: str, count: float) -> dict:
+    result = await hass.config_entries.subentries.async_init(
+        (entry_id, "page"), context={"source": SOURCE_USER}
+    )
+    result = await hass.config_entries.subentries.async_configure(
+        result["flow_id"], {"next_step_id": "all_pages"}
+    )
+    assert result["type"] is FlowResultType.FORM
+    return await hass.config_entries.subentries.async_configure(
+        result["flow_id"], {"page_count": count}
+    )
+
+
+async def test_add_all_pages(hass: HomeAssistant, screen: Screen) -> None:
+    """All pages at once leaves the pages already set up as they are."""
+    entry = await screen.setup_entry()
+    before = {sub.subentry_id: sub for sub in entry.subentries.values()}
+
+    result = await _add_all_pages(hass, entry.entry_id, 5.0)
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "pages_added"
+    assert result["description_placeholders"] == {"pages": "Page 4, Page 5"}
+    await hass.async_block_till_done()
+
+    for subentry_id, subentry in before.items():
+        assert entry.subentries[subentry_id] == subentry
+    added = sorted(
+        (sub.data["page"], sub.title, dict(sub.data))
+        for subentry_id, sub in entry.subentries.items()
+        if subentry_id not in before
+    )
+    assert added == [
+        (4, "Page 4", {"page": 4, "show": "always"}),
+        (5, "Page 5", {"page": 5, "show": "always"}),
+    ]
+    assert hass.states.get("button.moin_show_page_5") is not None
+
+
+async def test_add_all_pages_none_new(hass: HomeAssistant, screen: Screen) -> None:
+    """When every page is there already, nothing is added."""
+    entry = await screen.setup_entry()
+    count = len(entry.subentries)
+    result = await _add_all_pages(hass, entry.entry_id, 2.0)
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "no_new_pages"
+    assert len(entry.subentries) == count

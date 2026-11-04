@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+- **All pages at once.** Setting up a screen takes the number of its pages (optional) and adds them all: "Page 1" to
+  "Page n", each always in the rotation. On an entry, **Add page** → **All pages at once** does the same and leaves
+  page numbers already set up as they are. Rename the pages and give them conditions afterwards.
+- **Add page** asks first: one page, or all of them.
+
 ## 0.5.0
 
 - The brightness levels are **Brightness level 1**, **2** and **3** now, no longer day, evening and dim. Configure says

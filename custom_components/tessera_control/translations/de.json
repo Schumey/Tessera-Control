@@ -10,12 +10,14 @@
     "step": {
       "user": {
         "data": {
-          "device_id": "Tessera-Display"
+          "device_id": "Tessera-Display",
+          "page_count": "Seiten auf dem Display"
         },
         "data_description": {
-          "device_id": "Das ESPHome-Gerät des Displays."
+          "device_id": "Das ESPHome-Gerät des Displays.",
+          "page_count": "Optional: legt die Seiten 1 bis zu dieser Zahl auf einmal an, jede als „Seite n“ und immer in der Rotation. Umbenennen und Bedingungen setzen danach am Eintrag."
         },
-        "description": "Wähle das Display. Danach fügst du seine Seiten hinzu („Seite hinzufügen“) und legst fest, wonach sich die Helligkeit richtet („Konfigurieren“).",
+        "description": "Wähle das Display. Um alle Seiten auf einmal anzulegen, gib ihre Anzahl an; sonst fügst du sie später einzeln hinzu („Seite hinzufügen“). Unter „Konfigurieren“ legst du fest, wonach sich die Helligkeit richtet.",
         "title": "Tessera Control"
       }
     }
@@ -23,6 +25,8 @@
   "config_subentries": {
     "page": {
       "abort": {
+        "no_new_pages": "Alle Seiten bis zu dieser Zahl sind schon angelegt.",
+        "pages_added": "Angelegt: {pages}. Umbenennen oder eine Bedingung setzen über das ⋮-Menü der Seite.",
         "reconfigure_successful": "Die Seite wurde geändert."
       },
       "entry_type": "Seite",
@@ -33,6 +37,31 @@
         "user": "Seite hinzufügen"
       },
       "step": {
+        "all_pages": {
+          "data": {
+            "page_count": "Seiten auf dem Display"
+          },
+          "data_description": {
+            "page_count": "Legt die Seiten 1 bis zu dieser Zahl an, jede als „Seite n“ und immer in der Rotation. Seitennummern, die es schon gibt, bleiben, wie sie sind."
+          },
+          "title": "Alle Seiten anlegen"
+        },
+        "page": {
+          "data": {
+            "entity": "Entität",
+            "name": "Name",
+            "page": "Seitennummer",
+            "show": "In der Rotation",
+            "states": "Zustände"
+          },
+          "data_description": {
+            "entity": "Nur für „wenn eine Entität einen dieser Zustände hat“.",
+            "name": "Steht auf dem Knopf für diese Seite.",
+            "page": "Die Nummer der Seite auf dem Display; die erste Seite ist 1.",
+            "states": "Die Seite ist in der Rotation, solange die Entität einen dieser Zustände hat. Einen Zustand, der nicht in der Liste steht, eintippen und Enter drücken."
+          },
+          "title": "Seite hinzufügen"
+        },
         "reconfigure": {
           "data": {
             "entity": "Entität",
@@ -50,18 +79,9 @@
           "title": "Seite ändern"
         },
         "user": {
-          "data": {
-            "entity": "Entität",
-            "name": "Name",
-            "page": "Seitennummer",
-            "show": "In der Rotation",
-            "states": "Zustände"
-          },
-          "data_description": {
-            "entity": "Nur für „wenn eine Entität einen dieser Zustände hat“.",
-            "name": "Steht auf dem Knopf für diese Seite.",
-            "page": "Die Nummer der Seite auf dem Display; die erste Seite ist 1.",
-            "states": "Die Seite ist in der Rotation, solange die Entität einen dieser Zustände hat. Einen Zustand, der nicht in der Liste steht, eintippen und Enter drücken."
+          "menu_options": {
+            "all_pages": "Alle Seiten auf einmal",
+            "page": "Eine Seite"
           },
           "title": "Seite hinzufügen"
         }

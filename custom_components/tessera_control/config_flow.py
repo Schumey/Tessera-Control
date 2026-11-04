@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from types import MappingProxyType
 from typing import Any
 
 import probatio as vol
 
 from homeassistant.config_entries import (
     ConfigEntry,
+    ConfigSubentryData,
     ConfigFlow,
     ConfigFlowResult,
     ConfigSubentry,
@@ -43,6 +45,7 @@ from .const import (
     CONF_EVENING_LEVEL,
     CONF_FALLBACK_PAGE,
     CONF_PAGE,
+    CONF_PAGE_COUNT,
     CONF_PAGE_NAME,
     CONF_PAUSE_MINUTES,
     CONF_PRESENCE_ENTITY,
@@ -65,6 +68,9 @@ from .const import (
 from .screen import resolve_screen
 
 PAGE_NUMBER = NumberSelector(
+    NumberSelectorConfig(min=1, max=MAX_PAGE, step=1, mode=NumberSelectorMode.BOX)
+)
+PAGE_COUNT = NumberSelector(
     NumberSelectorConfig(min=1, max=MAX_PAGE, step=1, mode=NumberSelectorMode.BOX)
 )
 LEVEL_NUMBER = NumberSelector(
@@ -104,6 +110,11 @@ class TesseraControlConfigFlow(ConfigFlow, domain=DOMAIN):
                         CONF_DEVICE_ID: device_id,
                         CONF_SHOW_PAGE_SERVICE: screen.show_page_service,
                     },
+                    subentries=new_pages(
+                        self.hass.config.language,
+                        int(user_input.get(CONF_PAGE_COUNT, 0)),
+                        set(),
+                    ),
                 )
 
         return self.async_show_form(
@@ -112,7 +123,8 @@ class TesseraControlConfigFlow(ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(CONF_DEVICE_ID): DeviceSelector(
                         DeviceSelectorConfig(integration=ESPHOME_DOMAIN)
-                    )
+                    ),
+                    vol.Optional(CONF_PAGE_COUNT): PAGE_COUNT,
                 }
             ),
             errors=errors,
@@ -190,6 +202,26 @@ class TesseraControlOptionsFlow(OptionsFlow):
         )
 
 
+def page_title(language: str, page: int) -> str:
+    """The name a page gets when it is added with all the others."""
+    word = "Seite" if language.split("-")[0] == "de" else "Page"
+    return f"{word} {page}"
+
+
+def new_pages(language: str, count: int, existing: set[int]) -> list[ConfigSubentryData]:
+    """Pages 1 to count that are not among the existing page numbers, each always in the rotation."""
+    return [
+        ConfigSubentryData(
+            data={CONF_PAGE: page, CONF_SHOW: SHOW_ALWAYS},
+            subentry_type=SUBENTRY_PAGE,
+            title=page_title(language, page),
+            unique_id=None,
+        )
+        for page in range(1, count + 1)
+        if page not in existing
+    ]
+
+
 def _page_schema() -> vol.Schema:
     return vol.Schema(
         {
@@ -216,13 +248,56 @@ def _page_schema() -> vol.Schema:
 
 
 class PageSubentryFlow(ConfigSubentryFlow):
-    """Add or change one page of the rotation."""
+    """Add one page or all of them, or change one page of the rotation."""
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> SubentryFlowResult:
+        """One page, or all pages at once."""
+        return self.async_show_menu(step_id="user", menu_options=["page", "all_pages"])
+
+    async def async_step_page(
+        self, user_input: dict[str, Any] | None = None
+    ) -> SubentryFlowResult:
         """Add a page."""
-        return await self._async_page_form("user", user_input, None)
+        return await self._async_page_form("page", user_input, None)
+
+    async def async_step_all_pages(
+        self, user_input: dict[str, Any] | None = None
+    ) -> SubentryFlowResult:
+        """Add pages 1 to the screen's last, leaving out the pages already there."""
+        if user_input is not None:
+            entry = self._get_entry()
+            existing = {
+                int(subentry.data[CONF_PAGE])
+                for subentry in entry.subentries.values()
+                if subentry.subentry_type == SUBENTRY_PAGE
+            }
+            pages = new_pages(
+                self.hass.config.language, int(user_input[CONF_PAGE_COUNT]), existing
+            )
+            if not pages:
+                return self.async_abort(reason="no_new_pages")
+            for page in pages:
+                self.hass.config_entries.async_add_subentry(
+                    entry,
+                    ConfigSubentry(
+                        data=MappingProxyType(page["data"]),
+                        subentry_type=page["subentry_type"],
+                        title=page["title"],
+                        unique_id=page["unique_id"],
+                    ),
+                )
+            return self.async_abort(
+                reason="pages_added",
+                description_placeholders={
+                    "pages": ", ".join(page["title"] for page in pages)
+                },
+            )
+        return self.async_show_form(
+            step_id="all_pages",
+            data_schema=vol.Schema({vol.Required(CONF_PAGE_COUNT): PAGE_COUNT}),
+        )
 
     async def async_step_reconfigure(
         self, user_input: dict[str, Any] | None = None

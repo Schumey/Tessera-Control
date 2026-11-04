@@ -32,8 +32,10 @@ Ab Home Assistant 2026.10.
 ## Einrichten
 
 1. Einstellungen → Geräte & Dienste → **Integration hinzufügen** → **Tessera Control**, und das Display wählen. Es
-   muss online sein.
-2. Am Eintrag der Integration für jede Seite der Rotation einmal **Seite hinzufügen**:
+   muss online sein. Mit **Seiten auf dem Display** (optional) werden alle Seiten gleich mit angelegt: „Seite 1“ bis
+   „Seite n“, jede immer in der Rotation.
+2. Am Eintrag der Integration **Seite hinzufügen** → **Alle Seiten auf einmal** macht dasselbe später; Seitennummern,
+   die es schon gibt, bleiben. Mit **Eine Seite** kommt eine Seite einzeln dazu:
    - **Name**: steht auf dem Knopf der Seite.
    - **Seitennummer**: die Nummer der Seite auf dem Display; die erste Seite ist 1.
    - **In der Rotation**: *Immer*, oder *Wenn eine Entität einen dieser Zustände hat* mit Entität und Zuständen

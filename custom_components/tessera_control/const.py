@@ -42,6 +42,7 @@ DEFAULT_OPTIONS: dict[str, Any] = {
 # Page subentries
 SUBENTRY_PAGE = "page"
 CONF_PAGE = "page"
+CONF_PAGE_COUNT = "page_count"
 CONF_PAGE_NAME = "name"
 CONF_SHOW = "show"
 CONF_ENTITY = "entity"

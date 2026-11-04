@@ -10,12 +10,14 @@
     "step": {
       "user": {
         "data": {
-          "device_id": "Tessera screen"
+          "device_id": "Tessera screen",
+          "page_count": "Pages on the screen"
         },
         "data_description": {
-          "device_id": "The ESPHome device of the screen."
+          "device_id": "The ESPHome device of the screen.",
+          "page_count": "Optional: adds pages 1 to this number at once, each named \"Page n\" and always in the rotation. Rename them and give them conditions on the entry afterwards."
         },
-        "description": "Choose the screen. Afterwards, add its pages (\"Add page\") and set what the brightness follows (\"Configure\").",
+        "description": "Choose the screen. To add all its pages at once, give their number; otherwise add them one by one later (\"Add page\"). \"Configure\" sets what the brightness follows.",
         "title": "Tessera Control"
       }
     }
@@ -23,6 +25,8 @@
   "config_subentries": {
     "page": {
       "abort": {
+        "no_new_pages": "Every page up to this number is already set up.",
+        "pages_added": "Added: {pages}. Rename a page or give it a condition with its ⋮ menu.",
         "reconfigure_successful": "The page was changed."
       },
       "entry_type": "Page",
@@ -33,6 +37,31 @@
         "user": "Add page"
       },
       "step": {
+        "all_pages": {
+          "data": {
+            "page_count": "Pages on the screen"
+          },
+          "data_description": {
+            "page_count": "Adds pages 1 to this number, each named \"Page n\" and always in the rotation. Page numbers already set up stay as they are."
+          },
+          "title": "Add all pages"
+        },
+        "page": {
+          "data": {
+            "entity": "Entity",
+            "name": "Name",
+            "page": "Page number",
+            "show": "In the rotation",
+            "states": "States"
+          },
+          "data_description": {
+            "entity": "Only for \"when an entity is in one of these states\".",
+            "name": "Shown on the button for this page.",
+            "page": "The page's number on the screen; the first page is 1.",
+            "states": "The page is in the rotation while the entity has one of these states. Type a state that is not in the list and press Enter."
+          },
+          "title": "Add page"
+        },
         "reconfigure": {
           "data": {
             "entity": "Entity",
@@ -50,18 +79,9 @@
           "title": "Change page"
         },
         "user": {
-          "data": {
-            "entity": "Entity",
-            "name": "Name",
-            "page": "Page number",
-            "show": "In the rotation",
-            "states": "States"
-          },
-          "data_description": {
-            "entity": "Only for \"when an entity is in one of these states\".",
-            "name": "Shown on the button for this page.",
-            "page": "The page's number on the screen; the first page is 1.",
-            "states": "The page is in the rotation while the entity has one of these states. Type a state that is not in the list and press Enter."
+          "menu_options": {
+            "all_pages": "All pages at once",
+            "page": "One page"
           },
           "title": "Add page"
         }

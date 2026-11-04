@@ -30,8 +30,10 @@ Home Assistant 2026.10 or later.
 ## Set up
 
 1. Settings → Devices & services → **Add integration** → **Tessera Control**, and choose the screen. It must be
-   online.
-2. On the integration's entry, **Add page** once for every page you want in the rotation:
+   online. With **Pages on the screen** (optional) all its pages are added at once: "Page 1" to "Page n", each
+   always in the rotation.
+2. On the integration's entry, **Add page** → **All pages at once** does the same later; page numbers already set up
+   stay. **One page** adds a single page:
    - **Name**: shown on the page's button.
    - **Page number**: the page's number on the screen; the first page is 1.
    - **In the rotation**: *Always*, or *When an entity is in one of these states* with the entity and its states
