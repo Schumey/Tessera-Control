@@ -53,7 +53,7 @@ async def test_user_flow_with_pages(hass: HomeAssistant, screen: Screen) -> None
         (2, "Seite 2", {"page": 2, "show": "always"}),
         (3, "Seite 3", {"page": 3, "show": "always"}),
     ]
-    assert hass.states.get("button.moin_show_seite_3") is not None
+    assert hass.states.get("button.moin_seite_3_zeigen") is not None
 
 
 async def test_user_flow_already_configured(hass: HomeAssistant, screen: Screen) -> None:
